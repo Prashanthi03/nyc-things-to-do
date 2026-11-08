@@ -1,0 +1,927 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Things to Do in NYC 🗽</title>
+<style>
+/* ==STYLE-START== */
+:root{
+  --yellow:#FFC60A; --yellow-dark:#E0A800; --ink:#141414; --paper:#FFFDF6;
+  --card:#FFFFFF; --line:#E7E2D0; --accent:#1A56DB; --good:#1B7F4B; --warn:#FFE8C2;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--paper);color:var(--ink);line-height:1.45;-webkit-text-size-adjust:100%;}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px 96px;}
+header.app{position:sticky;top:0;z-index:20;background:var(--yellow);border-bottom:4px solid var(--ink);}
+header .bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;max-width:1100px;margin:0 auto;}
+.title{font-size:1.6rem;font-weight:900;letter-spacing:-0.5px;margin:0;display:flex;align-items:center;gap:10px;}
+.title .sub{font-size:.72rem;font-weight:800;background:var(--ink);color:var(--yellow);padding:3px 9px;border-radius:999px;white-space:nowrap;}
+.spacer{flex:1;}
+button{font:inherit;cursor:pointer;border:2px solid var(--ink);background:#fff;color:var(--ink);
+  border-radius:12px;padding:10px 14px;min-height:44px;font-weight:700;
+  transition:transform .08s ease, box-shadow .08s ease, background .15s;}
+button:hover{transform:translateY(-1px);}
+button:active{transform:translateY(1px);}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px;}
+.btn-primary{background:var(--ink);color:var(--yellow);}
+.btn-dice{background:#fff;font-size:1.05rem;}
+.tabs{display:flex;gap:8px;}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--yellow);}
+.progress{display:flex;align-items:center;gap:12px;margin:18px 0 6px;font-weight:800;font-size:1.05rem;flex-wrap:wrap;}
+.progress .count{background:var(--yellow);border:2px solid var(--ink);border-radius:999px;padding:4px 14px;}
+.progress .sub{font-weight:700;color:#555;font-size:.9rem;}
+.filters{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin:10px 0 2px;}
+.filters label{font-weight:800;font-size:.78rem;display:flex;flex-direction:column;gap:3px;text-transform:uppercase;letter-spacing:.3px;}
+.filters select{font:inherit;min-height:44px;border:2px solid var(--ink);border-radius:12px;padding:6px 10px;background:#fff;font-weight:600;}
+.cat-group{margin-top:22px;}
+.cat-group > h2{font-size:1.1rem;margin:0 0 10px;display:flex;align-items:center;gap:8px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;}
+.card{background:var(--card);border:3px solid var(--ink);border-radius:18px;padding:14px;
+  display:flex;flex-direction:column;gap:8px;box-shadow:5px 5px 0 var(--ink);transition:transform .1s ease;}
+.card:hover{transform:translateY(-2px);}
+.card.visited{opacity:.7;}
+.cat-badge{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:.78rem;
+  padding:3px 10px;border-radius:999px;border:2px solid var(--ink);align-self:flex-start;}
+.card h3{margin:2px 0;font-size:1.15rem;}
+.meta{font-size:.82rem;font-weight:700;color:#3a3a3a;display:flex;gap:6px;flex-wrap:wrap;}
+.meta .pill{background:#f3efe0;border-radius:8px;padding:2px 8px;}
+.blurb{font-size:.9rem;color:#333;flex:1;}
+.card .actions{display:flex;gap:8px;margin-top:2px;}
+.card .actions button{flex:1;min-height:44px;font-size:.85rem;padding:8px;}
+.visit-btn.on{background:var(--good);color:#fff;}
+.empty{text-align:center;padding:44px 16px;font-weight:700;color:#555;display:flex;flex-direction:column;gap:14px;align-items:center;}
+.notice{background:var(--warn);border:2px solid var(--ink);border-radius:12px;padding:10px 14px;margin:12px 0;font-weight:700;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50;}
+.modal{background:var(--paper);border:3px solid var(--ink);border-radius:20px;box-shadow:8px 8px 0 var(--ink);
+  max-width:460px;width:100%;padding:22px;max-height:90vh;overflow:auto;}
+.modal h2{margin-top:0;}
+.modal .close-row{display:flex;gap:8px;margin-top:8px;}
+.modal .close-row button{flex:1;}
+.form-row{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;font-weight:700;}
+.form-row input,.form-row select{font:inherit;min-height:44px;border:2px solid var(--ink);border-radius:10px;padding:8px 10px;}
+.hint{font-size:.78rem;font-weight:600;color:#666;}
+.form-err{color:#B00020;font-weight:800;margin-bottom:10px;}
+.pop{animation:pop .35s ease;}
+@keyframes pop{0%{transform:scale(.82);opacity:0;}60%{transform:scale(1.05);}100%{transform:scale(1);opacity:1;}}
+.plan-list{list-style:none;padding:0;margin:16px 0;display:flex;flex-direction:column;gap:10px;}
+.plan-item{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:10px 12px;}
+.plan-item.visited{opacity:.65;}
+.plan-item .grow{flex:1;min-width:0;}
+.plan-item .grow .nm{font-weight:800;}
+.plan-item .grow .mt{font-size:.78rem;color:#555;font-weight:700;}
+.plan-item button{min-height:44px;padding:6px 10px;}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
+@media (max-width:520px){ .title{font-size:1.3rem;} .grid{grid-template-columns:1fr;} .filters label{flex:1;} }
+/* ==STYLE-END== */
+</style>
+</head>
+<body>
+<div id="app"><!-- UI rendered in Task 8 --></div>
+
+<script>
+/* ==LOGIC-START== */
+// Pure, DOM-free logic. The test harness extracts everything between the
+// LOGIC markers and runs it under Node. Keep this block free of DOM/window
+// references so it loads cleanly outside a browser.
+function ping() { return 'pong'; }
+
+// Canonical match key: "<category>::<normalized name>". Lowercase, strip
+// punctuation, collapse whitespace. Used for all dedup (add time and load).
+function normalizeKey(category, name) {
+  const n = String(name)
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return category + '::' + n;
+}
+
+// Non-guessable id for user-added items, NEVER derived from the name, so it
+// cannot collide with a hand-authored seed slug.
+function makeCustomId() {
+  const rand = (Math.random().toString(36).slice(2) + '000000').slice(0, 6);
+  return 'c_' + Date.now() + '_' + rand;
+}
+
+// Add a user item to a category only if its normalized key isn't already in
+// the live catalog (seed ∪ custom). moods is always stored as an array.
+function addCustomItem(customItems, input, seed) {
+  const live = (seed || []).concat(customItems || []);
+  const key = normalizeKey(input.category, input.name);
+  if (live.some(function (it) { return normalizeKey(it.category, it.name) === key; })) {
+    return { ok: false, reason: 'duplicate' };
+  }
+  const moods = Array.isArray(input.moods)
+    ? input.moods.slice()
+    : (input.mood ? [input.mood] : []);
+  const item = {
+    id: makeCustomId(),
+    name: String(input.name).trim(),
+    category: input.category,
+    emoji: input.emoji || '📍',
+    area: input.area || '',
+    budget: input.budget || '$$',
+    moods: moods,
+    time: input.time || 'half',
+    blurb: input.blurb || '',
+    custom: true,
+  };
+  return { ok: true, item };
+}
+
+var CURRENT_SCHEMA = 1;
+
+// Reconcile stored per-person state against the live catalog on every load:
+// apply id renames, merge custom items that now match a seed (seed wins, mark
+// migrates), drop orphaned ids, and de-dup. Keeps progress and Plan honest.
+function reconcile(state, seed, renameMap) {
+  renameMap = renameMap || {};
+  seed = seed || [];
+  var customItems = (state && Array.isArray(state.customItems)) ? state.customItems.slice() : [];
+  var visited = (state && Array.isArray(state.visited)) ? state.visited.slice() : [];
+  var plan = (state && Array.isArray(state.plan)) ? state.plan.slice() : [];
+
+  // 1. Apply seed id renames (old -> new) so a rename never drops a mark.
+  var applyRename = function (id) {
+    return Object.prototype.hasOwnProperty.call(renameMap, id) ? renameMap[id] : id;
+  };
+  visited = visited.map(applyRename);
+  plan = plan.map(applyRename);
+
+  // 2. Merge custom items that now match a seed by normalized key (seed wins);
+  //    remap the dropped custom id onto the seed id.
+  var seedByKey = {};
+  seed.forEach(function (it) { seedByKey[normalizeKey(it.category, it.name)] = it.id; });
+  var idRemap = {};
+  var keptCustom = [];
+  customItems.forEach(function (it) {
+    var k = normalizeKey(it.category, it.name);
+    if (seedByKey[k]) {
+      idRemap[it.id] = seedByKey[k];
+    } else {
+      keptCustom.push(it);
+    }
+  });
+  var applyRemap = function (id) { return idRemap[id] || id; };
+  visited = visited.map(applyRemap);
+  plan = plan.map(applyRemap);
+
+  // 3. Drop orphans: ids that match no live item (seed ∪ kept custom).
+  var liveIds = {};
+  seed.forEach(function (it) { liveIds[it.id] = true; });
+  keptCustom.forEach(function (it) { liveIds[it.id] = true; });
+  visited = visited.filter(function (id) { return liveIds[id]; });
+  plan = plan.filter(function (id) { return liveIds[id]; });
+
+  // 4. De-dup: visited as a set; plan keeps first occurrence (preserve order).
+  visited = Array.from(new Set(visited));
+  var seen = {};
+  plan = plan.filter(function (id) {
+    if (seen[id]) return false;
+    seen[id] = true;
+    return true;
+  });
+
+  return { schemaVersion: CURRENT_SCHEMA, visited: visited, plan: plan, customItems: keptCustom };
+}
+
+// Name-only normalization (no category prefix) for enricher KB lookups.
+function normName(name) {
+  return String(name)
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// Keyword fallback when a place isn't in the KB. Returns partial attributes or
+// null. Order matters: first match wins.
+function enrichHeuristic(low) {
+  if (/\bpark\b|garden|waterfront|promenade|greenway/.test(low)) {
+    return { category: 'parks', budget: 'free', time: 'half', moods: ['outdoorsy', 'chill'] };
+  }
+  if (/museum|gallery|exhibit/.test(low)) {
+    return { category: 'museums', budget: '$$', time: 'half', moods: ['artsy'] };
+  }
+  if (/pizza|deli|bar|restaurant|taqueria|cafe|coffee|bakery|diner|eatery/.test(low)) {
+    return { category: 'food', budget: '$$', time: 'quick', moods: ['foodie'] };
+  }
+  if (/theater|theatre|broadway|club|comedy|jazz|concert|lounge/.test(low)) {
+    return { category: 'shows', budget: '$$$', time: 'half', moods: ['lively'] };
+  }
+  return null;
+}
+
+// Curated starter catalog shown in Browse (NYC's five boroughs + Jersey City).
+// moods vocabulary: chill, adventurous, romantic, foodie, artsy, touristy,
+// outdoorsy, lively.
+var SEED = [
+  // Iconic NYC
+  { id: 'statue-of-liberty', name: 'Statue of Liberty', category: 'iconic', emoji: '🗽', area: 'Liberty Island', budget: '$$', moods: ['touristy'], time: 'half', blurb: 'Icon of freedom; ferry over for Lady Liberty and Ellis Island.' },
+  { id: 'empire-state', name: 'Empire State Building', category: 'iconic', emoji: '🏙️', area: 'Midtown', budget: '$$$', moods: ['touristy', 'romantic'], time: 'half', blurb: 'Art-deco skyscraper with sweeping observation decks.' },
+  { id: 'top-of-the-rock', name: 'Top of the Rock', category: 'iconic', emoji: '🌆', area: 'Midtown', budget: '$$$', moods: ['touristy', 'romantic'], time: 'half', blurb: 'Rooftop views framing the Empire State and Central Park.' },
+  { id: 'brooklyn-bridge', name: 'Brooklyn Bridge', category: 'iconic', emoji: '🌉', area: 'Downtown', budget: 'free', moods: ['outdoorsy', 'romantic', 'touristy'], time: 'half', blurb: 'Walk the famous span for skyline and East River views.' },
+  { id: 'times-square', name: 'Times Square', category: 'iconic', emoji: '✨', area: 'Midtown', budget: 'free', moods: ['lively', 'touristy'], time: 'quick', blurb: 'Dazzling lights, billboards, and nonstop energy.' },
+  { id: 'one-world', name: 'One World Observatory', category: 'iconic', emoji: '🗼', area: 'Financial District', budget: '$$$', moods: ['touristy'], time: 'half', blurb: "Top of the Western Hemisphere's tallest building." },
+  { id: 'grand-central', name: 'Grand Central Terminal', category: 'iconic', emoji: '🚉', area: 'Midtown', budget: 'free', moods: ['artsy', 'touristy'], time: 'quick', blurb: 'Beaux-arts train hall with a starry ceiling.' },
+  { id: 'rockefeller-center', name: 'Rockefeller Center', category: 'iconic', emoji: '⛸️', area: 'Midtown', budget: '$$', moods: ['touristy', 'lively'], time: 'half', blurb: 'Plaza, shops, and the seasonal skating rink.' },
+
+  // Museums & Culture
+  { id: 'the-met', name: 'The Met', category: 'museums', emoji: '🎨', area: 'Upper East Side', budget: '$$', moods: ['artsy', 'chill'], time: 'half', blurb: 'World-class art from every era; pay-what-you-wish for NY State.' },
+  { id: 'moma', name: 'MoMA', category: 'museums', emoji: '🖼️', area: 'Midtown', budget: '$$$', moods: ['artsy'], time: 'half', blurb: 'Modern masters from Van Gogh to Warhol.' },
+  { id: 'amnh', name: 'American Museum of Natural History', category: 'museums', emoji: '🦕', area: 'Upper West Side', budget: '$$', moods: ['chill', 'artsy'], time: 'half', blurb: 'Dinosaurs, the blue whale, and the planetarium.' },
+  { id: 'guggenheim', name: 'Guggenheim Museum', category: 'museums', emoji: '🌀', area: 'Upper East Side', budget: '$$', moods: ['artsy'], time: 'half', blurb: "Frank Lloyd Wright's spiraling modern-art landmark." },
+  { id: 'whitney', name: 'Whitney Museum', category: 'museums', emoji: '🏛️', area: 'Meatpacking District', budget: '$$', moods: ['artsy'], time: 'half', blurb: "American art beside the High Line's south end." },
+  { id: 'intrepid', name: 'Intrepid Museum', category: 'museums', emoji: '🚀', area: "Hell's Kitchen", budget: '$$', moods: ['adventurous', 'touristy'], time: 'half', blurb: 'Aircraft carrier with jets, a sub, and a space shuttle.' },
+  { id: 'tenement-museum', name: 'Tenement Museum', category: 'museums', emoji: '🏚️', area: 'Lower East Side', budget: '$$', moods: ['chill', 'artsy'], time: 'half', blurb: 'Immigrant life told through restored apartments.' },
+  { id: 'brooklyn-museum', name: 'Brooklyn Museum', category: 'museums', emoji: '🎭', area: 'Brooklyn', budget: '$$', moods: ['artsy', 'chill'], time: 'half', blurb: 'Bold exhibitions next to the Botanic Garden.' },
+
+  // Parks & Outdoors
+  { id: 'central-park', name: 'Central Park', category: 'parks', emoji: '🌳', area: 'Manhattan', budget: 'free', moods: ['outdoorsy', 'chill', 'romantic'], time: 'half', blurb: '843 acres of meadows, lakes, and winding paths.' },
+  { id: 'prospect-park', name: 'Prospect Park', category: 'parks', emoji: '🌲', area: 'Brooklyn', budget: 'free', moods: ['outdoorsy', 'chill'], time: 'half', blurb: "Olmsted's Brooklyn masterpiece with a long meadow." },
+  { id: 'high-line', name: 'The High Line', category: 'parks', emoji: '🌿', area: 'Chelsea', budget: 'free', moods: ['outdoorsy', 'chill', 'romantic'], time: 'half', blurb: 'Elevated rail turned planted walkway over the West Side.' },
+  { id: 'brooklyn-bridge-park', name: 'Brooklyn Bridge Park', category: 'parks', emoji: '⚓', area: 'Brooklyn', budget: 'free', moods: ['outdoorsy', 'chill'], time: 'half', blurb: 'Riverfront piers with skyline views and a carousel.' },
+  { id: 'washington-square', name: 'Washington Square Park', category: 'parks', emoji: '⛲', area: 'Greenwich Village', budget: 'free', moods: ['lively', 'chill'], time: 'quick', blurb: 'Arch, fountain, and street performers in the Village.' },
+  { id: 'bryant-park', name: 'Bryant Park', category: 'parks', emoji: '🌼', area: 'Midtown', budget: 'free', moods: ['chill', 'lively'], time: 'quick', blurb: 'Midtown lawn with cafe tables and seasonal events.' },
+  { id: 'liberty-state-park', name: 'Liberty State Park', category: 'parks', emoji: '🗽', area: 'Jersey City', budget: 'free', moods: ['outdoorsy', 'chill'], time: 'half', blurb: 'Jersey waterfront with the best Lady Liberty views.' },
+
+  // Food & Drink
+  { id: 'joes-pizza', name: "Joe's Pizza", category: 'food', emoji: '🍕', area: 'Greenwich Village', budget: '$', moods: ['foodie', 'chill'], time: 'quick', blurb: 'Classic NY slice, folded and perfect since 1975.' },
+  { id: 'katzs', name: "Katz's Delicatessen", category: 'food', emoji: '🥪', area: 'Lower East Side', budget: '$$', moods: ['foodie', 'touristy'], time: 'quick', blurb: 'Legendary pastrami on rye on the Lower East Side.' },
+  { id: 'chelsea-market', name: 'Chelsea Market', category: 'food', emoji: '🍜', area: 'Chelsea', budget: '$$', moods: ['foodie', 'lively'], time: 'half', blurb: 'Food hall packed with vendors in a former factory.' },
+  { id: 'levain', name: 'Levain Bakery', category: 'food', emoji: '🍪', area: 'Upper West Side', budget: '$', moods: ['foodie'], time: 'quick', blurb: 'Gooey, towering cookies worth the line.' },
+  { id: 'xian-famous-foods', name: "Xi'an Famous Foods", category: 'food', emoji: '🍲', area: 'Chinatown', budget: '$', moods: ['foodie', 'adventurous'], time: 'quick', blurb: 'Hand-pulled noodles and cumin lamb burgers.' },
+  { id: 'smorgasburg', name: 'Smorgasburg', category: 'food', emoji: '🍢', area: 'Brooklyn', budget: '$$', moods: ['foodie', 'lively'], time: 'half', blurb: "Open-air weekend market of NYC's best food vendors." },
+  { id: 'grove-street-dining', name: 'Grove Street Dining', category: 'food', emoji: '🍽️', area: 'Jersey City', budget: '$$', moods: ['foodie', 'lively'], time: 'half', blurb: "Jersey City's buzzy restaurant row by the PATH." },
+
+  // Neighborhoods
+  { id: 'greenwich-village', name: 'Greenwich Village', category: 'neighborhoods', emoji: '🏘️', area: 'Manhattan', budget: 'free', moods: ['chill', 'romantic', 'artsy'], time: 'half', blurb: 'Leafy streets, jazz clubs, and historic cafes.' },
+  { id: 'soho', name: 'SoHo', category: 'neighborhoods', emoji: '🛍️', area: 'Manhattan', budget: '$$', moods: ['artsy', 'lively'], time: 'half', blurb: 'Cast-iron facades, galleries, and shopping.' },
+  { id: 'williamsburg', name: 'Williamsburg', category: 'neighborhoods', emoji: '🎸', area: 'Brooklyn', budget: '$$', moods: ['lively', 'artsy', 'foodie'], time: 'half', blurb: 'Hip Brooklyn nightlife, boutiques, and waterfront.' },
+  { id: 'chinatown', name: 'Chinatown', category: 'neighborhoods', emoji: '🏮', area: 'Manhattan', budget: '$', moods: ['foodie', 'lively'], time: 'half', blurb: 'Bustling streets, dumplings, and markets.' },
+  { id: 'harlem', name: 'Harlem', category: 'neighborhoods', emoji: '🎺', area: 'Manhattan', budget: '$$', moods: ['artsy', 'lively'], time: 'half', blurb: 'Jazz heritage, soul food, and brownstones.' },
+  { id: 'dumbo', name: 'DUMBO', category: 'neighborhoods', emoji: '📸', area: 'Brooklyn', budget: '$$', moods: ['artsy', 'romantic'], time: 'half', blurb: 'Cobblestones, the famous bridge view, and galleries.' },
+  { id: 'little-italy', name: 'Little Italy', category: 'neighborhoods', emoji: '🍝', area: 'Manhattan', budget: '$$', moods: ['foodie', 'touristy'], time: 'quick', blurb: 'Old-world cafes and red-sauce classics.' },
+
+  // Shows & Nightlife
+  { id: 'broadway-show', name: 'Broadway Show', category: 'shows', emoji: '🎭', area: 'Theater District', budget: '$$$', moods: ['lively', 'romantic'], time: 'half', blurb: 'World-class theater in the heart of Midtown.' },
+  { id: 'blue-note', name: 'Blue Note Jazz Club', category: 'shows', emoji: '🎷', area: 'Greenwich Village', budget: '$$$', moods: ['lively', 'romantic'], time: 'half', blurb: 'Intimate sets from world-renowned jazz artists.' },
+  { id: 'comedy-cellar', name: 'Comedy Cellar', category: 'shows', emoji: '🎤', area: 'Greenwich Village', budget: '$$', moods: ['lively'], time: 'half', blurb: 'Legendary basement club with surprise drop-ins.' },
+  { id: 'lincoln-center', name: 'Lincoln Center', category: 'shows', emoji: '🎻', area: 'Upper West Side', budget: '$$$', moods: ['artsy', 'romantic'], time: 'half', blurb: 'Opera, ballet, and symphony on a grand plaza.' },
+  { id: 'apollo-theater', name: 'Apollo Theater', category: 'shows', emoji: '🌟', area: 'Harlem', budget: '$$', moods: ['lively', 'artsy'], time: 'half', blurb: "Harlem's historic stage and Amateur Night." },
+  { id: 'beacon-theatre', name: 'Beacon Theatre', category: 'shows', emoji: '🎶', area: 'Upper West Side', budget: '$$$', moods: ['lively'], time: 'half', blurb: 'Ornate Upper West Side concert landmark.' },
+
+  // Hidden Gems
+  { id: 'the-cloisters', name: 'The Cloisters', category: 'hidden', emoji: '🏰', area: 'Washington Heights', budget: '$$', moods: ['chill', 'artsy', 'romantic'], time: 'half', blurb: 'Medieval art and gardens high above the Hudson.' },
+  { id: 'roosevelt-tram', name: 'Roosevelt Island Tram', category: 'hidden', emoji: '🚠', area: 'Roosevelt Island', budget: '$', moods: ['adventurous', 'romantic'], time: 'quick', blurb: 'Aerial cable car with skyline views for a subway fare.' },
+  { id: 'green-wood', name: 'Green-Wood Cemetery', category: 'hidden', emoji: '🌾', area: 'Brooklyn', budget: 'free', moods: ['chill', 'outdoorsy'], time: 'half', blurb: 'Historic garden cemetery with hilltop harbor views.' },
+  { id: 'city-island', name: 'City Island', category: 'hidden', emoji: '🦞', area: 'The Bronx', budget: '$$', moods: ['chill', 'foodie'], time: 'half', blurb: 'Seaside village with seafood shacks in the Bronx.' },
+  { id: 'mana-contemporary', name: 'Mana Contemporary', category: 'hidden', emoji: '🖌️', area: 'Jersey City', budget: '$$', moods: ['artsy'], time: 'half', blurb: 'Sprawling Jersey City arts complex and studios.' },
+  { id: 'little-island', name: 'Little Island', category: 'hidden', emoji: '🌸', area: 'Chelsea', budget: 'free', moods: ['chill', 'romantic', 'outdoorsy'], time: 'quick', blurb: 'Whimsical park on tulip-shaped pillars over the Hudson.' },
+  { id: 'elevated-acre', name: 'Elevated Acre', category: 'hidden', emoji: '🌱', area: 'Financial District', budget: 'free', moods: ['chill'], time: 'quick', blurb: 'Hidden rooftop lawn with harbor views downtown.' },
+
+  // Free & Cheap
+  { id: 'staten-island-ferry', name: 'Staten Island Ferry', category: 'free', emoji: '⛴️', area: 'Lower Manhattan', budget: 'free', moods: ['outdoorsy', 'touristy'], time: 'half', blurb: 'Free harbor cruise past the Statue of Liberty.' },
+  { id: 'the-battery', name: 'The Battery', category: 'free', emoji: '🌊', area: 'Lower Manhattan', budget: 'free', moods: ['outdoorsy', 'chill'], time: 'quick', blurb: "Waterfront park at Manhattan's southern tip." },
+  { id: 'exchange-place-walk', name: 'Exchange Place Waterfront Walk', category: 'free', emoji: '🌇', area: 'Jersey City', budget: 'free', moods: ['outdoorsy', 'romantic'], time: 'quick', blurb: 'Jersey promenade with a head-on Manhattan skyline.' },
+  { id: 'fort-tryon-park', name: 'Fort Tryon Park', category: 'free', emoji: '🏞️', area: 'Washington Heights', budget: 'free', moods: ['outdoorsy', 'chill'], time: 'half', blurb: 'Hilltop gardens and Hudson views by the Cloisters.' },
+];
+
+// Offline enricher knowledge base, keyed by normalized name (see normName).
+// Values suggest attributes; `aliases` list alternate names (normalized on use).
+var KB = {
+  // Iconic / landmarks
+  'statue of liberty': { category: 'iconic', area: 'Liberty Island', budget: '$$', moods: ['touristy'], time: 'half', aliases: ['lady liberty', 'the statue'] },
+  'empire state building': { category: 'iconic', area: 'Midtown', budget: '$$$', moods: ['touristy', 'romantic'], time: 'half', aliases: ['esb'] },
+  'top of the rock': { category: 'iconic', area: 'Midtown', budget: '$$$', moods: ['touristy', 'romantic'], time: 'half' },
+  'brooklyn bridge': { category: 'iconic', area: 'Downtown', budget: 'free', moods: ['outdoorsy', 'romantic', 'touristy'], time: 'half' },
+  'times square': { category: 'iconic', area: 'Midtown', budget: 'free', moods: ['lively', 'touristy'], time: 'quick' },
+  'one world observatory': { category: 'iconic', area: 'Financial District', budget: '$$$', moods: ['touristy'], time: 'half', aliases: ['freedom tower', 'one world trade'] },
+  'grand central terminal': { category: 'iconic', area: 'Midtown', budget: 'free', moods: ['artsy', 'touristy'], time: 'quick', aliases: ['grand central', 'grand central station'] },
+  'rockefeller center': { category: 'iconic', area: 'Midtown', budget: '$$', moods: ['touristy', 'lively'], time: 'half', aliases: ['rockefeller plaza', '30 rock'] },
+  'flatiron building': { category: 'iconic', area: 'Flatiron', budget: 'free', moods: ['artsy', 'touristy'], time: 'quick' },
+  'chrysler building': { category: 'iconic', area: 'Midtown', budget: 'free', moods: ['artsy', 'touristy'], time: 'quick' },
+  'ellis island': { category: 'iconic', area: 'Ellis Island', budget: '$$', moods: ['touristy', 'chill'], time: 'half' },
+  'wall street': { category: 'iconic', area: 'Financial District', budget: 'free', moods: ['touristy'], time: 'quick' },
+  'charging bull': { category: 'iconic', area: 'Financial District', budget: 'free', moods: ['touristy'], time: 'quick', aliases: ['wall street bull'] },
+  'september 11 memorial': { category: 'iconic', area: 'Financial District', budget: 'free', moods: ['chill'], time: 'half', aliases: ['9 11 memorial', 'ground zero', 'world trade center memorial'] },
+  'the oculus': { category: 'iconic', area: 'Financial District', budget: 'free', moods: ['artsy', 'touristy'], time: 'quick', aliases: ['oculus'] },
+  'st patricks cathedral': { category: 'iconic', area: 'Midtown', budget: 'free', moods: ['artsy', 'chill'], time: 'quick', aliases: ['saint patricks cathedral'] },
+  'radio city music hall': { category: 'shows', area: 'Midtown', budget: '$$$', moods: ['lively', 'touristy'], time: 'half', aliases: ['radio city'] },
+  'manhattan bridge': { category: 'iconic', area: 'Downtown', budget: 'free', moods: ['outdoorsy', 'touristy'], time: 'half' },
+  'summit one vanderbilt': { category: 'iconic', area: 'Midtown', budget: '$$$', moods: ['touristy', 'adventurous'], time: 'half', aliases: ['summit', 'one vanderbilt'] },
+  'the vessel': { category: 'iconic', area: 'Hudson Yards', budget: '$$', moods: ['touristy', 'artsy'], time: 'quick', aliases: ['vessel'] },
+  'high bridge': { category: 'iconic', area: 'Washington Heights', budget: 'free', moods: ['outdoorsy'], time: 'half' },
+
+  // Museums & culture
+  'the met': { category: 'museums', area: 'Upper East Side', budget: '$$', moods: ['artsy', 'chill'], time: 'half', aliases: ['metropolitan museum of art', 'met museum'] },
+  'moma': { category: 'museums', area: 'Midtown', budget: '$$$', moods: ['artsy'], time: 'half', aliases: ['museum of modern art'] },
+  'american museum of natural history': { category: 'museums', area: 'Upper West Side', budget: '$$', moods: ['chill', 'artsy'], time: 'half', aliases: ['amnh', 'natural history museum'] },
+  'guggenheim museum': { category: 'museums', area: 'Upper East Side', budget: '$$', moods: ['artsy'], time: 'half', aliases: ['guggenheim'] },
+  'whitney museum': { category: 'museums', area: 'Meatpacking District', budget: '$$', moods: ['artsy'], time: 'half', aliases: ['whitney'] },
+  'intrepid museum': { category: 'museums', area: "Hell's Kitchen", budget: '$$', moods: ['adventurous', 'touristy'], time: 'half', aliases: ['intrepid'] },
+  'tenement museum': { category: 'museums', area: 'Lower East Side', budget: '$$', moods: ['chill', 'artsy'], time: 'half' },
+  'brooklyn museum': { category: 'museums', area: 'Brooklyn', budget: '$$', moods: ['artsy', 'chill'], time: 'half' },
+  'the cloisters': { category: 'hidden', area: 'Washington Heights', budget: '$$', moods: ['chill', 'artsy', 'romantic'], time: 'half', aliases: ['cloisters', 'met cloisters'] },
+  'new museum': { category: 'museums', area: 'Lower East Side', budget: '$$', moods: ['artsy'], time: 'half' },
+  'morgan library': { category: 'museums', area: 'Midtown', budget: '$$', moods: ['artsy', 'chill'], time: 'half', aliases: ['morgan library and museum'] },
+  'frick collection': { category: 'museums', area: 'Upper East Side', budget: '$$', moods: ['artsy', 'chill'], time: 'half', aliases: ['the frick'] },
+  'museum of the city of new york': { category: 'museums', area: 'Upper East Side', budget: '$$', moods: ['artsy'], time: 'half', aliases: ['mcny'] },
+  'moma ps1': { category: 'museums', area: 'Long Island City', budget: '$$', moods: ['artsy', 'lively'], time: 'half', aliases: ['ps1'] },
+  'noguchi museum': { category: 'museums', area: 'Astoria', budget: '$$', moods: ['artsy', 'chill'], time: 'half' },
+  'new york transit museum': { category: 'museums', area: 'Brooklyn', budget: '$', moods: ['chill', 'adventurous'], time: 'half', aliases: ['transit museum'] },
+  'cooper hewitt': { category: 'museums', area: 'Upper East Side', budget: '$$', moods: ['artsy'], time: 'half', aliases: ['cooper hewitt design museum'] },
+  'neue galerie': { category: 'museums', area: 'Upper East Side', budget: '$$', moods: ['artsy'], time: 'half' },
+  'the jewish museum': { category: 'museums', area: 'Upper East Side', budget: '$$', moods: ['artsy'], time: 'half' },
+  'museum of ice cream': { category: 'museums', area: 'SoHo', budget: '$$$', moods: ['lively', 'touristy'], time: 'half' },
+  'new york public library': { category: 'hidden', area: 'Midtown', budget: 'free', moods: ['artsy', 'chill'], time: 'quick', aliases: ['nypl', 'main branch library'] },
+
+  // Parks & outdoors
+  'central park': { category: 'parks', area: 'Manhattan', budget: 'free', moods: ['outdoorsy', 'chill', 'romantic'], time: 'half' },
+  'prospect park': { category: 'parks', area: 'Brooklyn', budget: 'free', moods: ['outdoorsy', 'chill'], time: 'half' },
+  'the high line': { category: 'parks', area: 'Chelsea', budget: 'free', moods: ['outdoorsy', 'chill', 'romantic'], time: 'half', aliases: ['high line'] },
+  'brooklyn bridge park': { category: 'parks', area: 'Brooklyn', budget: 'free', moods: ['outdoorsy', 'chill'], time: 'half' },
+  'washington square park': { category: 'parks', area: 'Greenwich Village', budget: 'free', moods: ['lively', 'chill'], time: 'quick', aliases: ['washington square'] },
+  'bryant park': { category: 'parks', area: 'Midtown', budget: 'free', moods: ['chill', 'lively'], time: 'quick' },
+  'liberty state park': { category: 'parks', area: 'Jersey City', budget: 'free', moods: ['outdoorsy', 'chill'], time: 'half' },
+  'little island': { category: 'hidden', area: 'Chelsea', budget: 'free', moods: ['chill', 'romantic', 'outdoorsy'], time: 'quick' },
+  'fort tryon park': { category: 'free', area: 'Washington Heights', budget: 'free', moods: ['outdoorsy', 'chill'], time: 'half' },
+  'the battery': { category: 'free', area: 'Lower Manhattan', budget: 'free', moods: ['outdoorsy', 'chill'], time: 'quick', aliases: ['battery park'] },
+  'riverside park': { category: 'parks', area: 'Upper West Side', budget: 'free', moods: ['outdoorsy', 'chill'], time: 'half' },
+  'hudson river park': { category: 'parks', area: 'Chelsea', budget: 'free', moods: ['outdoorsy', 'chill'], time: 'half' },
+  'madison square park': { category: 'parks', area: 'Flatiron', budget: 'free', moods: ['chill', 'lively'], time: 'quick' },
+  'tompkins square park': { category: 'parks', area: 'East Village', budget: 'free', moods: ['chill', 'lively'], time: 'quick' },
+  'union square park': { category: 'parks', area: 'Union Square', budget: 'free', moods: ['lively', 'chill'], time: 'quick', aliases: ['union square'] },
+  'socrates sculpture park': { category: 'parks', area: 'Astoria', budget: 'free', moods: ['artsy', 'outdoorsy'], time: 'half' },
+  'governors island': { category: 'parks', area: 'Governors Island', budget: '$', moods: ['outdoorsy', 'chill', 'adventurous'], time: 'full' },
+  'wave hill': { category: 'parks', area: 'The Bronx', budget: '$', moods: ['outdoorsy', 'chill', 'romantic'], time: 'half' },
+  'new york botanical garden': { category: 'parks', area: 'The Bronx', budget: '$$', moods: ['outdoorsy', 'chill'], time: 'half', aliases: ['nybg', 'botanical garden'] },
+  'brooklyn botanic garden': { category: 'parks', area: 'Brooklyn', budget: '$$', moods: ['outdoorsy', 'chill', 'romantic'], time: 'half' },
+  'coney island': { category: 'parks', area: 'Brooklyn', budget: '$', moods: ['lively', 'adventurous', 'touristy'], time: 'full', aliases: ['luna park'] },
+  'rockaway beach': { category: 'parks', area: 'Queens', budget: 'free', moods: ['outdoorsy', 'chill'], time: 'full' },
+
+  // Food & drink
+  'joe s pizza': { category: 'food', area: 'Greenwich Village', budget: '$', moods: ['foodie', 'chill'], time: 'quick', aliases: ['joes pizza'] },
+  'katz s delicatessen': { category: 'food', area: 'Lower East Side', budget: '$$', moods: ['foodie', 'touristy'], time: 'quick', aliases: ['katzs deli', 'katz deli', 'katzs'] },
+  'chelsea market': { category: 'food', area: 'Chelsea', budget: '$$', moods: ['foodie', 'lively'], time: 'half' },
+  'levain bakery': { category: 'food', area: 'Upper West Side', budget: '$', moods: ['foodie'], time: 'quick', aliases: ['levain'] },
+  'xi an famous foods': { category: 'food', area: 'Chinatown', budget: '$', moods: ['foodie', 'adventurous'], time: 'quick', aliases: ['xian famous foods'] },
+  'smorgasburg': { category: 'food', area: 'Brooklyn', budget: '$$', moods: ['foodie', 'lively'], time: 'half' },
+  'grove street dining': { category: 'food', area: 'Jersey City', budget: '$$', moods: ['foodie', 'lively'], time: 'half' },
+  'grimaldi s': { category: 'food', area: 'DUMBO', budget: '$$', moods: ['foodie', 'touristy'], time: 'quick', aliases: ['grimaldis', 'grimaldis pizza'] },
+  'lombardi s': { category: 'food', area: 'Nolita', budget: '$$', moods: ['foodie', 'touristy'], time: 'quick', aliases: ['lombardis'] },
+  'di fara pizza': { category: 'food', area: 'Brooklyn', budget: '$$', moods: ['foodie'], time: 'quick', aliases: ['di fara', 'difara'] },
+  'prince street pizza': { category: 'food', area: 'Nolita', budget: '$', moods: ['foodie'], time: 'quick' },
+  'russ and daughters': { category: 'food', area: 'Lower East Side', budget: '$$', moods: ['foodie'], time: 'quick', aliases: ['russ daughters'] },
+  'shake shack': { category: 'food', area: 'Madison Square', budget: '$', moods: ['foodie', 'lively'], time: 'quick' },
+  'the halal guys': { category: 'food', area: 'Midtown', budget: '$', moods: ['foodie'], time: 'quick', aliases: ['halal guys'] },
+  'peter luger': { category: 'food', area: 'Williamsburg', budget: '$$$', moods: ['foodie'], time: 'half', aliases: ['peter luger steakhouse'] },
+  'eataly': { category: 'food', area: 'Flatiron', budget: '$$', moods: ['foodie', 'lively'], time: 'half' },
+  'los tacos no 1': { category: 'food', area: 'Chelsea', budget: '$', moods: ['foodie'], time: 'quick', aliases: ['los tacos'] },
+  'dominique ansel bakery': { category: 'food', area: 'SoHo', budget: '$$', moods: ['foodie'], time: 'quick', aliases: ['dominique ansel', 'cronut'] },
+  'magnolia bakery': { category: 'food', area: 'West Village', budget: '$', moods: ['foodie', 'touristy'], time: 'quick' },
+  'veselka': { category: 'food', area: 'East Village', budget: '$', moods: ['foodie', 'chill'], time: 'quick' },
+  'balthazar': { category: 'food', area: 'SoHo', budget: '$$$', moods: ['foodie', 'romantic'], time: 'half' },
+  'junior s cheesecake': { category: 'food', area: 'Downtown Brooklyn', budget: '$$', moods: ['foodie', 'touristy'], time: 'quick', aliases: ['juniors', 'juniors cheesecake'] },
+  'nathan s famous': { category: 'food', area: 'Coney Island', budget: '$', moods: ['foodie', 'touristy'], time: 'quick', aliases: ['nathans', 'nathans famous'] },
+  'momofuku': { category: 'food', area: 'East Village', budget: '$$', moods: ['foodie'], time: 'half' },
+  'the halal cart': { category: 'food', area: 'Midtown', budget: '$', moods: ['foodie'], time: 'quick' },
+  'dhaba': { category: 'food', area: 'Jersey City', budget: '$$', moods: ['foodie', 'adventurous'], time: 'half' },
+
+  // Neighborhoods
+  'greenwich village': { category: 'neighborhoods', area: 'Manhattan', budget: 'free', moods: ['chill', 'romantic', 'artsy'], time: 'half', aliases: ['the village'] },
+  'soho': { category: 'neighborhoods', area: 'Manhattan', budget: '$$', moods: ['artsy', 'lively'], time: 'half' },
+  'williamsburg': { category: 'neighborhoods', area: 'Brooklyn', budget: '$$', moods: ['lively', 'artsy', 'foodie'], time: 'half' },
+  'chinatown': { category: 'neighborhoods', area: 'Manhattan', budget: '$', moods: ['foodie', 'lively'], time: 'half' },
+  'harlem': { category: 'neighborhoods', area: 'Manhattan', budget: '$$', moods: ['artsy', 'lively'], time: 'half' },
+  'dumbo': { category: 'neighborhoods', area: 'Brooklyn', budget: '$$', moods: ['artsy', 'romantic'], time: 'half' },
+  'little italy': { category: 'neighborhoods', area: 'Manhattan', budget: '$$', moods: ['foodie', 'touristy'], time: 'quick' },
+  'east village': { category: 'neighborhoods', area: 'Manhattan', budget: '$$', moods: ['lively', 'artsy'], time: 'half' },
+  'west village': { category: 'neighborhoods', area: 'Manhattan', budget: '$$', moods: ['chill', 'romantic'], time: 'half' },
+  'tribeca': { category: 'neighborhoods', area: 'Manhattan', budget: '$$$', moods: ['chill', 'foodie'], time: 'half' },
+  'nolita': { category: 'neighborhoods', area: 'Manhattan', budget: '$$', moods: ['artsy', 'lively'], time: 'half' },
+  'astoria': { category: 'neighborhoods', area: 'Queens', budget: '$', moods: ['foodie', 'lively'], time: 'half' },
+  'long island city': { category: 'neighborhoods', area: 'Queens', budget: '$$', moods: ['artsy', 'chill'], time: 'half', aliases: ['lic'] },
+  'park slope': { category: 'neighborhoods', area: 'Brooklyn', budget: '$$', moods: ['chill', 'foodie'], time: 'half' },
+  'bushwick': { category: 'neighborhoods', area: 'Brooklyn', budget: '$', moods: ['artsy', 'lively'], time: 'half' },
+  'flushing': { category: 'neighborhoods', area: 'Queens', budget: '$', moods: ['foodie', 'adventurous'], time: 'half' },
+  'financial district': { category: 'neighborhoods', area: 'Manhattan', budget: '$$', moods: ['touristy'], time: 'half', aliases: ['fidi'] },
+  'chelsea': { category: 'neighborhoods', area: 'Manhattan', budget: '$$', moods: ['artsy', 'lively'], time: 'half' },
+  'the bronx': { category: 'neighborhoods', area: 'The Bronx', budget: '$', moods: ['lively', 'adventurous'], time: 'half' },
+  'journal square': { category: 'neighborhoods', area: 'Jersey City', budget: '$', moods: ['lively', 'foodie'], time: 'half' },
+
+  // Shows & nightlife
+  'broadway': { category: 'shows', area: 'Theater District', budget: '$$$', moods: ['lively', 'romantic'], time: 'half', aliases: ['broadway show'] },
+  'blue note jazz club': { category: 'shows', area: 'Greenwich Village', budget: '$$$', moods: ['lively', 'romantic'], time: 'half', aliases: ['blue note'] },
+  'comedy cellar': { category: 'shows', area: 'Greenwich Village', budget: '$$', moods: ['lively'], time: 'half' },
+  'lincoln center': { category: 'shows', area: 'Upper West Side', budget: '$$$', moods: ['artsy', 'romantic'], time: 'half' },
+  'apollo theater': { category: 'shows', area: 'Harlem', budget: '$$', moods: ['lively', 'artsy'], time: 'half' },
+  'beacon theatre': { category: 'shows', area: 'Upper West Side', budget: '$$$', moods: ['lively'], time: 'half' },
+  'village vanguard': { category: 'shows', area: 'Greenwich Village', budget: '$$$', moods: ['lively', 'romantic'], time: 'half' },
+  'birdland': { category: 'shows', area: 'Theater District', budget: '$$$', moods: ['lively', 'romantic'], time: 'half' },
+  'carnegie hall': { category: 'shows', area: 'Midtown', budget: '$$$', moods: ['artsy', 'romantic'], time: 'half' },
+  'madison square garden': { category: 'shows', area: 'Midtown', budget: '$$$', moods: ['lively'], time: 'half', aliases: ['msg'] },
+  'brooklyn bowl': { category: 'shows', area: 'Williamsburg', budget: '$$', moods: ['lively'], time: 'half' },
+  'house of yes': { category: 'shows', area: 'Bushwick', budget: '$$', moods: ['lively', 'adventurous'], time: 'half' },
+  'webster hall': { category: 'shows', area: 'East Village', budget: '$$', moods: ['lively'], time: 'half' },
+  'the bowery ballroom': { category: 'shows', area: 'Lower East Side', budget: '$$', moods: ['lively'], time: 'half', aliases: ['bowery ballroom'] },
+
+  // Hidden gems
+  'roosevelt island tram': { category: 'hidden', area: 'Roosevelt Island', budget: '$', moods: ['adventurous', 'romantic'], time: 'quick', aliases: ['tram', 'roosevelt tram'] },
+  'green wood cemetery': { category: 'hidden', area: 'Brooklyn', budget: 'free', moods: ['chill', 'outdoorsy'], time: 'half', aliases: ['greenwood cemetery'] },
+  'city island': { category: 'hidden', area: 'The Bronx', budget: '$$', moods: ['chill', 'foodie'], time: 'half' },
+  'mana contemporary': { category: 'hidden', area: 'Jersey City', budget: '$$', moods: ['artsy'], time: 'half' },
+  'elevated acre': { category: 'hidden', area: 'Financial District', budget: 'free', moods: ['chill'], time: 'quick' },
+  'stone street': { category: 'hidden', area: 'Financial District', budget: '$$', moods: ['chill', 'lively'], time: 'quick' },
+  'roosevelt island': { category: 'hidden', area: 'Roosevelt Island', budget: 'free', moods: ['chill', 'outdoorsy'], time: 'half' },
+  'cathedral of st john the divine': { category: 'hidden', area: 'Morningside Heights', budget: '$', moods: ['artsy', 'chill'], time: 'half', aliases: ['st john the divine'] },
+  'greenacre park': { category: 'hidden', area: 'Midtown', budget: 'free', moods: ['chill'], time: 'quick' },
+  'the whispering gallery': { category: 'hidden', area: 'Midtown', budget: 'free', moods: ['touristy', 'chill'], time: 'quick', aliases: ['whispering gallery'] },
+  'top of the high line': { category: 'hidden', area: 'Chelsea', budget: 'free', moods: ['outdoorsy'], time: 'half' },
+  'empire stores': { category: 'hidden', area: 'DUMBO', budget: '$$', moods: ['foodie', 'chill'], time: 'half' },
+
+  // Free & cheap
+  'staten island ferry': { category: 'free', area: 'Lower Manhattan', budget: 'free', moods: ['outdoorsy', 'touristy'], time: 'half' },
+  'exchange place waterfront walk': { category: 'free', area: 'Jersey City', budget: 'free', moods: ['outdoorsy', 'romantic'], time: 'quick', aliases: ['exchange place', 'jersey city waterfront'] },
+  'chelsea galleries': { category: 'free', area: 'Chelsea', budget: 'free', moods: ['artsy', 'chill'], time: 'half', aliases: ['chelsea art galleries'] },
+  'grand army plaza': { category: 'free', area: 'Brooklyn', budget: 'free', moods: ['chill', 'outdoorsy'], time: 'quick' },
+  'the met steps': { category: 'free', area: 'Upper East Side', budget: 'free', moods: ['chill', 'lively'], time: 'quick' },
+  'brooklyn heights promenade': { category: 'free', area: 'Brooklyn', budget: 'free', moods: ['outdoorsy', 'romantic'], time: 'quick', aliases: ['brooklyn promenade'] },
+  'newport waterfront': { category: 'free', area: 'Jersey City', budget: 'free', moods: ['outdoorsy', 'chill'], time: 'quick', aliases: ['newport'] },
+};
+
+// Suggest a categorization for a place name, fully offline. The single seam a
+// live LLM/search lookup replaces in Phase C. Never throws on unknown input.
+function enrich(name, kb) {
+  kb = kb || KB;
+  var nn = normName(name);
+  var hit = null;
+  if (kb[nn]) {
+    hit = kb[nn];
+  } else {
+    for (var key in kb) {
+      if (!Object.prototype.hasOwnProperty.call(kb, key)) continue;
+      var aliases = kb[key].aliases || [];
+      for (var i = 0; i < aliases.length; i++) {
+        if (normName(aliases[i]) === nn) { hit = kb[key]; break; }
+      }
+      if (hit) break;
+    }
+  }
+  if (hit) {
+    return {
+      category: hit.category,
+      area: hit.area || '',
+      budget: hit.budget || '$$',
+      moods: Array.isArray(hit.moods) ? hit.moods.slice() : (hit.moods ? [hit.moods] : []),
+      time: hit.time || 'half',
+      source: 'kb',
+    };
+  }
+  var h = enrichHeuristic(nn);
+  if (h) {
+    return { category: h.category, area: '', budget: h.budget, moods: h.moods.slice(), time: h.time, source: 'heuristic' };
+  }
+  return { category: 'hidden', area: '', budget: '$$', moods: ['chill'], time: 'half', source: 'default' };
+}
+
+// Narrow items by any combination of mood/budget/area/time. An absent field is
+// no constraint; mood matches if the item's moods array includes it. AND logic.
+function applyFilters(items, filters) {
+  filters = filters || {};
+  return (items || []).filter(function (it) {
+    if (filters.mood && !(Array.isArray(it.moods) && it.moods.indexOf(filters.mood) !== -1)) return false;
+    if (filters.budget && it.budget !== filters.budget) return false;
+    if (filters.area && it.area !== filters.area) return false;
+    if (filters.time && it.time !== filters.time) return false;
+    return true;
+  });
+}
+
+// One random item from the filtered set, or null when nothing matches. rng is
+// injectable for deterministic tests.
+function pickSurprise(items, filters, rng) {
+  rng = rng || Math.random;
+  var pool = applyFilters(items, filters);
+  if (!pool.length) return null;
+  return pool[Math.floor(rng() * pool.length)];
+}
+
+// Visited count (only ids still in the catalog) and the catalog total.
+function progress(visited, catalog) {
+  var ids = {};
+  (catalog || []).forEach(function (it) { ids[it.id] = true; });
+  var count = (visited || []).filter(function (id) { return ids[id]; }).length;
+  return { count: count, total: (catalog || []).length };
+}
+
+// Sorted unique non-empty area values across the live catalog.
+function deriveAreas(catalog) {
+  var set = {};
+  (catalog || []).forEach(function (it) { if (it.area) set[it.area] = true; });
+  return Object.keys(set).sort();
+}
+
+// Acquire a storage provider defensively: in browsers that block site data or
+// in a sandboxed iframe, even *reading* window.localStorage throws SecurityError.
+// Returns the provider or null (makeStore treats null as unavailable).
+function safeStorage(win) {
+  try {
+    if (win && win.localStorage) return win.localStorage;
+  } catch (e) {
+    return null;
+  }
+  return null;
+}
+
+// Persistence wrapper over an injected storage provider ({getItem,setItem}).
+// All access is guarded: if storage is unavailable (private mode) or throws
+// (quota), it degrades to an in-memory session and flips `available` to false
+// so the UI can warn the user instead of silently losing marks.
+function makeStore(storage, key) {
+  key = key || 'nyc-todo:v1';
+  var available = true;
+  var mem = null;
+  function freshState() {
+    return { schemaVersion: CURRENT_SCHEMA, visited: [], plan: [], customItems: [] };
+  }
+  function save(state) {
+    mem = state;
+    try {
+      storage.setItem(key, JSON.stringify(state));
+    } catch (e) {
+      available = false;
+    }
+  }
+  function load(seed, renameMap) {
+    var raw = null;
+    try {
+      raw = storage.getItem(key);
+    } catch (e) {
+      available = false;
+    }
+    var state;
+    if (raw) {
+      try { state = JSON.parse(raw); } catch (e) { state = freshState(); }
+    } else {
+      state = mem || freshState();
+    }
+    var clean = reconcile(state, seed, renameMap);
+    save(clean);
+    return clean;
+  }
+  return {
+    load: load,
+    save: save,
+    get available() { return available; },
+  };
+}
+/* ==LOGIC-END== */
+
+/* ==UI-START== */
+// DOM wiring — runs only in the browser. All user-entered text is placed via
+// textContent / createTextNode, never innerHTML, to prevent self-XSS.
+(function () {
+  if (typeof document === 'undefined') return;
+
+  var CAT_META = {
+    iconic: { label: 'Iconic NYC', emoji: '🗽', color: '#FFD60A' },
+    museums: { label: 'Museums & Culture', emoji: '🎨', color: '#FFB4A2' },
+    parks: { label: 'Parks & Outdoors', emoji: '🌳', color: '#A7E8BD' },
+    food: { label: 'Food & Drink', emoji: '🍕', color: '#FFC9A0' },
+    neighborhoods: { label: 'Neighborhoods', emoji: '🏙️', color: '#BDE0FE' },
+    shows: { label: 'Shows & Nightlife', emoji: '🎭', color: '#E0BBE4' },
+    hidden: { label: 'Hidden Gems', emoji: '💎', color: '#FDE68A' },
+    free: { label: 'Free & Cheap', emoji: '🆓', color: '#C7F9CC' },
+  };
+  var CAT_ORDER = ['iconic', 'museums', 'parks', 'food', 'neighborhoods', 'shows', 'hidden', 'free'];
+  var BUDGETS = ['free', '$', '$$', '$$$'];
+  var BUDGET_LABEL = { free: 'Free', '$': '$', '$$': '$$', '$$$': '$$$' };
+  var TIMES = [['quick', 'Under 1 hr'], ['half', 'Half day'], ['full', 'Full day']];
+  var TIME_LABEL = { quick: '⏱ <1 hr', half: '⏱ Half day', full: '⏱ Full day' };
+  var MOODS = ['chill', 'adventurous', 'romantic', 'foodie', 'artsy', 'touristy', 'outdoorsy', 'lively'];
+
+  var store = makeStore(safeStorage(window));
+  var state = store.load(SEED);
+  var filters = { mood: '', budget: '', area: '', time: '' };
+  var tab = 'browse';
+  var root = document.getElementById('app');
+
+  // --- helpers ---
+  function el(tag, props, kids) {
+    var e = document.createElement(tag);
+    if (props) {
+      for (var k in props) {
+        if (!Object.prototype.hasOwnProperty.call(props, k)) continue;
+        if (k === 'text') e.textContent = props[k];
+        else if (k === 'class') e.className = props[k];
+        else if (k.slice(0, 2) === 'on' && typeof props[k] === 'function') e[k.toLowerCase()] = props[k];
+        else e.setAttribute(k, props[k]);
+      }
+    }
+    (kids || []).forEach(function (c) {
+      if (c == null) return;
+      e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    });
+    return e;
+  }
+  function pill(text) { return el('span', { class: 'pill', text: text }); }
+  function catalog() { return SEED.concat(state.customItems); }
+  function byId(id) { var c = catalog(); for (var i = 0; i < c.length; i++) if (c[i].id === id) return c[i]; return null; }
+  function isVisited(id) { return state.visited.indexOf(id) !== -1; }
+  function inPlan(id) { return state.plan.indexOf(id) !== -1; }
+  function persist() { store.save(state); }
+  function activeFilters() {
+    var f = {};
+    if (filters.mood) f.mood = filters.mood;
+    if (filters.budget) f.budget = filters.budget;
+    if (filters.area) f.area = filters.area;
+    if (filters.time) f.time = filters.time;
+    return f;
+  }
+
+  function toggleVisited(id) {
+    var i = state.visited.indexOf(id);
+    if (i === -1) state.visited.push(id); else state.visited.splice(i, 1);
+    persist(); render();
+  }
+  function togglePlan(id) {
+    var i = state.plan.indexOf(id);
+    if (i === -1) state.plan.push(id); else state.plan.splice(i, 1);
+    persist(); render();
+  }
+  function movePlan(id, dir) {
+    var i = state.plan.indexOf(id); if (i === -1) return;
+    var j = i + dir; if (j < 0 || j >= state.plan.length) return;
+    var t = state.plan[i]; state.plan[i] = state.plan[j]; state.plan[j] = t;
+    persist(); render();
+  }
+
+  // --- card ---
+  function card(item, popped) {
+    var meta = CAT_META[item.category] || { label: item.category, emoji: '📍', color: '#eee' };
+    var c = el('div', { class: 'card' + (isVisited(item.id) ? ' visited' : '') + (popped ? ' pop' : '') });
+    var badge = el('span', { class: 'cat-badge', text: meta.emoji + ' ' + meta.label });
+    badge.style.background = meta.color;
+    c.appendChild(badge);
+    c.appendChild(el('h3', { text: item.name }));
+    var m = el('div', { class: 'meta' });
+    m.appendChild(pill(BUDGET_LABEL[item.budget] || item.budget));
+    if (item.area) m.appendChild(pill('📍 ' + item.area));
+    m.appendChild(pill(TIME_LABEL[item.time] || item.time));
+    if (item.custom) m.appendChild(pill('⭐ yours'));
+    c.appendChild(m);
+    if (item.blurb) c.appendChild(el('div', { class: 'blurb', text: item.blurb }));
+    var actions = el('div', { class: 'actions' });
+    var vb = el('button', {
+      class: 'visit-btn' + (isVisited(item.id) ? ' on' : ''),
+      'aria-pressed': isVisited(item.id) ? 'true' : 'false',
+      text: isVisited(item.id) ? '✓ Visited' : 'Mark visited',
+      onClick: function () { toggleVisited(item.id); },
+    });
+    var pb = el('button', {
+      text: inPlan(item.id) ? '– Remove' : '＋ Plan',
+      onClick: function () { togglePlan(item.id); },
+    });
+    actions.appendChild(vb); actions.appendChild(pb);
+    c.appendChild(actions);
+    return c;
+  }
+
+  // --- header ---
+  function header() {
+    var h = el('header', { class: 'app' });
+    var bar = el('div', { class: 'bar' });
+    bar.appendChild(el('h1', { class: 'title' }, ['🗽 Things to Do in NYC', el('span', { class: 'sub', text: '+ Jersey City' })]));
+    bar.appendChild(el('div', { class: 'spacer' }));
+    var tabs = el('div', { class: 'tabs', role: 'tablist' });
+    tabs.appendChild(el('button', { class: 'tab', role: 'tab', 'aria-selected': tab === 'browse' ? 'true' : 'false', text: 'Browse', onClick: function () { tab = 'browse'; render(); } }));
+    var planLabel = 'Plan' + (state.plan.length ? ' (' + state.plan.length + ')' : '');
+    tabs.appendChild(el('button', { class: 'tab', role: 'tab', 'aria-selected': tab === 'plan' ? 'true' : 'false', text: planLabel, onClick: function () { tab = 'plan'; render(); } }));
+    bar.appendChild(tabs);
+    bar.appendChild(el('button', { class: 'btn-dice', 'aria-label': 'Surprise me', text: '🎲 Surprise', onClick: surprise }));
+    bar.appendChild(el('button', { class: 'btn-primary', text: '＋ Add', onClick: openAddForm }));
+    h.appendChild(bar);
+    return h;
+  }
+
+  // --- browse ---
+  function filterBar() {
+    var bar = el('div', { class: 'filters' });
+    function sel(labelText, key, opts) {
+      var options = [el('option', { value: '', text: 'Any' })];
+      opts.forEach(function (o) {
+        var val = Array.isArray(o) ? o[0] : o;
+        var txt = Array.isArray(o) ? o[1] : o;
+        options.push(el('option', { value: val, text: txt }));
+      });
+      var s = el('select', { onChange: function (e) { filters[key] = e.target.value; render(); } }, options);
+      s.value = filters[key];
+      return el('label', {}, [labelText, s]);
+    }
+    bar.appendChild(sel('Mood', 'mood', MOODS));
+    bar.appendChild(sel('Budget', 'budget', BUDGETS.map(function (b) { return [b, BUDGET_LABEL[b]]; })));
+    bar.appendChild(sel('Area', 'area', deriveAreas(catalog())));
+    bar.appendChild(sel('Time', 'time', TIMES));
+    if (filters.mood || filters.budget || filters.area || filters.time) {
+      bar.appendChild(el('button', { text: 'Clear filters', onClick: function () { filters = { mood: '', budget: '', area: '', time: '' }; render(); } }));
+    }
+    return bar;
+  }
+
+  function browseView() {
+    var wrap = el('div');
+    var p = progress(state.visited, catalog());
+    var prog = el('div', { class: 'progress' });
+    prog.appendChild(el('span', { class: 'count', text: 'You’ve visited ' + p.count + ' spots 🎉' }));
+    prog.appendChild(el('span', { class: 'sub', text: p.count + ' of ' + p.total }));
+    wrap.appendChild(prog);
+    wrap.appendChild(filterBar());
+
+    var items = applyFilters(catalog(), activeFilters());
+    if (!items.length) {
+      wrap.appendChild(el('div', { class: 'empty' }, [
+        'No spots match those filters 🙅',
+        el('button', { class: 'btn-primary', text: 'Clear filters', onClick: function () { filters = { mood: '', budget: '', area: '', time: '' }; render(); } }),
+      ]));
+      return wrap;
+    }
+    CAT_ORDER.forEach(function (cat) {
+      var group = items.filter(function (i) { return i.category === cat; });
+      if (!group.length) return;
+      var meta = CAT_META[cat];
+      var section = el('section', { class: 'cat-group' });
+      section.appendChild(el('h2', { text: meta.emoji + ' ' + meta.label }));
+      var grid = el('div', { class: 'grid' });
+      group.forEach(function (it) { grid.appendChild(card(it)); });
+      section.appendChild(grid);
+      wrap.appendChild(section);
+    });
+    return wrap;
+  }
+
+  // --- plan ---
+  function planView() {
+    var wrap = el('div');
+    wrap.appendChild(el('h2', { text: '🗓️ My Plan' }));
+    if (!state.plan.length) {
+      wrap.appendChild(el('div', { class: 'empty' }, [
+        'Your plan is empty. Tap “＋ Plan” on any spot to build your day!',
+        el('button', { class: 'btn-primary', text: 'Browse spots', onClick: function () { tab = 'browse'; render(); } }),
+      ]));
+      return wrap;
+    }
+    var list = el('ul', { class: 'plan-list' });
+    state.plan.forEach(function (id, idx) {
+      var item = byId(id);
+      if (!item) return;
+      var meta = CAT_META[item.category] || { emoji: '📍' };
+      var li = el('li', { class: 'plan-item' + (isVisited(id) ? ' visited' : '') });
+      li.appendChild(el('span', { 'aria-hidden': 'true', text: meta.emoji }));
+      var grow = el('div', { class: 'grow' });
+      grow.appendChild(el('div', { class: 'nm', text: item.name }));
+      grow.appendChild(el('div', { class: 'mt', text: (item.area ? item.area + ' · ' : '') + (BUDGET_LABEL[item.budget] || item.budget) }));
+      li.appendChild(grow);
+      li.appendChild(el('button', { 'aria-label': 'Move up', text: '↑', onClick: function () { movePlan(id, -1); } }));
+      li.appendChild(el('button', { 'aria-label': 'Move down', text: '↓', onClick: function () { movePlan(id, 1); } }));
+      li.appendChild(el('button', { class: isVisited(id) ? 'visit-btn on' : 'visit-btn', 'aria-pressed': isVisited(id) ? 'true' : 'false', text: isVisited(id) ? '✓' : 'Visit', onClick: function () { toggleVisited(id); } }));
+      li.appendChild(el('button', { 'aria-label': 'Remove from plan', text: '✕', onClick: function () { togglePlan(id); } }));
+      list.appendChild(li);
+    });
+    wrap.appendChild(list);
+    return wrap;
+  }
+
+  // --- surprise ---
+  function surprise() {
+    var pick = pickSurprise(catalog(), activeFilters());
+    if (!pick) {
+      openModal('No match 🎲', [
+        el('p', { text: 'Nothing matches your current filters. Clear them and roll again?' }),
+      ], [
+        el('button', { class: 'btn-primary', text: 'Clear & roll', onClick: function () { filters = { mood: '', budget: '', area: '', time: '' }; closeModal(); surprise(); } }),
+        el('button', { text: 'Close', onClick: closeModal }),
+      ]);
+      return;
+    }
+    openModal('🎲 Tonight’s pick', [card(pick, true)], [
+      el('button', { class: 'btn-primary', text: inPlan(pick.id) ? '– Remove from plan' : '＋ Add to plan', onClick: function () { togglePlan(pick.id); closeModal(); } }),
+      el('button', { text: '🎲 Roll again', onClick: function () { closeModal(); surprise(); } }),
+      el('button', { text: 'Close', onClick: closeModal }),
+    ]);
+  }
+
+  // --- add form ---
+  function openAddForm() {
+    var touched = {};
+    var errBox = el('div', { class: 'form-err', 'aria-live': 'polite' });
+    errBox.style.display = 'none';
+
+    function row(labelText, control, hint) {
+      var kids = [labelText, control];
+      if (hint) kids.push(el('span', { class: 'hint', text: hint }));
+      return el('div', { class: 'form-row' }, kids);
+    }
+    var nameInput = el('input', { type: 'text', placeholder: 'e.g. Statue of Liberty', 'aria-label': 'Place name' });
+    var catSel = el('select', {}, [el('option', { value: '', text: 'Pick a category…' })].concat(CAT_ORDER.map(function (c) { return el('option', { value: c, text: CAT_META[c].emoji + ' ' + CAT_META[c].label }); })));
+    var areas = deriveAreas(catalog());
+    var dataListId = 'areas-' + Date.now();
+    var areaList = el('datalist', { id: dataListId }, areas.map(function (a) { return el('option', { value: a }); }));
+    var areaInput = el('input', { type: 'text', list: dataListId, placeholder: 'Neighborhood or borough', 'aria-label': 'Area' });
+    var budgetSel = el('select', {}, BUDGETS.map(function (b) { return el('option', { value: b, text: BUDGET_LABEL[b] }); }));
+    var moodSel = el('select', {}, MOODS.map(function (mv) { return el('option', { value: mv, text: mv }); }));
+    var timeSel = el('select', {}, TIMES.map(function (t) { return el('option', { value: t[0], text: t[1] }); }));
+
+    [catSel, areaInput, budgetSel, moodSel, timeSel].forEach(function (ctrl) {
+      var key = ctrl === catSel ? 'category' : ctrl === areaInput ? 'area' : ctrl === budgetSel ? 'budget' : ctrl === moodSel ? 'mood' : 'time';
+      ctrl.addEventListener('input', function () { touched[key] = true; });
+      ctrl.addEventListener('change', function () { touched[key] = true; });
+    });
+
+    // Suggest attributes from the typed name, filling only untouched fields.
+    function suggest() {
+      if (!nameInput.value.trim()) return;
+      var e = enrich(nameInput.value);
+      if (!touched.category && e.category) catSel.value = e.category;
+      if (!touched.area && e.area) areaInput.value = e.area;
+      if (!touched.budget && e.budget) budgetSel.value = e.budget;
+      if (!touched.mood && e.moods && e.moods.length) moodSel.value = e.moods[0];
+      if (!touched.time && e.time) timeSel.value = e.time;
+    }
+    nameInput.addEventListener('blur', suggest);
+
+    function submit() {
+      var name = nameInput.value.trim();
+      if (!name) { showErr('Please enter a place name.'); return; }
+      if (!catSel.value) { showErr('Please pick a category.'); return; }
+      var input = {
+        name: name, category: catSel.value, area: areaInput.value.trim(),
+        budget: budgetSel.value || '$$', mood: moodSel.value || 'chill', time: timeSel.value || 'half',
+        emoji: (CAT_META[catSel.value] || {}).emoji || '📍',
+      };
+      var r = addCustomItem(state.customItems, input, SEED);
+      if (!r.ok) { showErr('“' + name + '” is already on the list 👍'); return; }
+      state.customItems.push(r.item);
+      persist();
+      closeModal();
+      tab = 'browse';
+      filters = { mood: '', budget: '', area: '', time: '' };
+      render();
+    }
+    function showErr(msg) { errBox.textContent = msg; errBox.style.display = 'block'; }
+
+    openModal('＋ Add a spot', [
+      errBox,
+      row('Name', nameInput, 'We’ll suggest the rest from the name — tweak anything.'),
+      row('Category', catSel),
+      row('Area', areaInput),
+      row('Budget', budgetSel),
+      row('Mood', moodSel),
+      row('Time needed', timeSel),
+      areaList,
+    ], [
+      el('button', { class: 'btn-primary', text: 'Add spot', onClick: submit }),
+      el('button', { text: 'Cancel', onClick: closeModal }),
+    ]);
+    nameInput.focus();
+  }
+
+  // --- modal ---
+  var overlayEl = null;
+  function openModal(titleText, bodyKids, footerBtns) {
+    closeModal();
+    var modal = el('div', { class: 'modal', role: 'dialog', 'aria-modal': 'true', 'aria-label': titleText });
+    modal.appendChild(el('h2', { text: titleText }));
+    (bodyKids || []).forEach(function (k) { modal.appendChild(k); });
+    if (footerBtns && footerBtns.length) {
+      var row = el('div', { class: 'close-row' });
+      footerBtns.forEach(function (b) { row.appendChild(b); });
+      modal.appendChild(row);
+    }
+    overlayEl = el('div', { class: 'overlay', onClick: function (e) { if (e.target === overlayEl) closeModal(); } }, [modal]);
+    document.body.appendChild(overlayEl);
+  }
+  function closeModal() { if (overlayEl && overlayEl.parentNode) overlayEl.parentNode.removeChild(overlayEl); overlayEl = null; }
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+
+  // --- render ---
+  function render() {
+    root.textContent = '';
+    root.appendChild(header());
+    var main = el('main', { class: 'wrap' });
+    if (!store.available) {
+      main.appendChild(el('div', { class: 'notice', text: '⚠️ Heads up: this browser isn’t saving changes (private mode?), so your marks won’t stick here.' }));
+    }
+    main.appendChild(tab === 'plan' ? planView() : browseView());
+    root.appendChild(main);
+  }
+
+  render();
+})();
+/* ==UI-END== */
+</script>
+</body>
+</html>
