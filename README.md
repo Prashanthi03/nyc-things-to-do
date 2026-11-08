@@ -1,9 +1,25 @@
-# 🗽 Things to Do in NYC (+ Jersey City)
+# 🗽 Things to Do in NYC
 
 A bright, fun, New-York-themed web app for finding things to do across the five
-boroughs **and Jersey City**. Browse by category, filter by mood/budget/area/time,
-hit **Surprise Me** for a random pick, build a **Plan**, add your own spots (with
-offline smart suggestions), and tick off what you've **Visited**.
+boroughs **and Jersey City**.
+
+**Features**
+- **235 curated spots** across 9 categories (incl. 💕 Date); spots can belong to
+  several categories at once.
+- **Explore** is a split view: a scannable index grouped by borough (or category)
+  on the left, and a detail panel for the selected spot on the right. Start with
+  highlights or switch to all 235; the search box covers everything.
+- **Themes**: Brownstone Sunset (default), plus palettes inspired by Sex and the
+  City, Gossip Girl, Friends and Mrs. Maisel. Your pick is remembered.
+- **Filters**: mood, budget, area, time, and **travel time from Jersey City** (an
+  offline public-transit estimate from Van Vorst St — approximate, not live routing).
+- **🎲 Surprise Me** — a random pick (skips places you've already visited).
+- **✨ Plan my day** (in the Plan tab) — tell it one spot / half day / full day and
+  it builds a clustered itinerary from unvisited spots; save it to your plan.
+- **＋ Add your own** — autocomplete recognizes ~600 known places (the 235 shown
+  plus a ~385-place knowledge base) and auto-fills categories, area, budget, mood,
+  time, and a description; remove spots you added anytime.
+- **Visited** toggle on every spot with a progress counter.
 
 It's a **single self-contained `index.html`** — all HTML, CSS, and JavaScript
 inline, no frameworks, no build step, and **no external network requests**. Open

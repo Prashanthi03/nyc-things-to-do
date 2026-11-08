@@ -17,8 +17,10 @@ const START = '/* ==LOGIC-START== */';
 const END = '/* ==LOGIC-END== */';
 
 // Every logic symbol the test suite needs. Add names here as logic grows.
-const EXPORTS = ['ping', 'normalizeKey', 'makeCustomId', 'addCustomItem', 'reconcile', 'enrich',
-  'applyFilters', 'pickSurprise', 'progress', 'deriveAreas', 'makeStore', 'safeStorage', 'SEED', 'KB'];
+const EXPORTS = ['normalizeKey', 'makeCustomId', 'addCustomItem', 'reconcile', 'enrich',
+  'applyFilters', 'pickSurprise', 'progress', 'deriveAreas', 'makeStore', 'safeStorage',
+  'suggestNames', 'searchItems', 'generatePlan', 'travelTime', 'boroughOf', 'contrastRatio', 'THEMES',
+  'SEED', 'KB_EXTRA', 'V1_RENAMES'];
 
 function extractLogic(htmlPath = HTML_PATH) {
   const html = fs.readFileSync(htmlPath, 'utf8');
