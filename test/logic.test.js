@@ -29,13 +29,14 @@ test('contrastRatio matches the WCAG formula at the extremes', () => {
   assert.ok(Math.abs(contrastRatio('#000000', '#FFFFFF') - 21) < 0.01);
   assert.ok(Math.abs(contrastRatio('#777777', '#777777') - 1) < 0.01);
 });
-test('every theme keeps text pairs at WCAG AA (>= 4.5:1)', () => {
+test('the single blended theme keeps text pairs at WCAG AA (>= 4.5:1)', () => {
   const { THEMES, contrastRatio } = loadLogic();
   const keys = Object.keys(THEMES);
-  assert.ok(keys.length >= 4, 'expected a default + TV-show themes');
+  assert.deepEqual(keys, ['nyc'], 'expected one default theme');
   for (const k of keys) {
     const t = THEMES[k];
-    for (const [fg, bg] of [['ink', 'bg'], ['ink', 'surface'], ['ink', 'surface2'], ['muted', 'surface'], ['onPrimary', 'primary'], ['headerInk', 'headerBase'], ['headerInk', 'tabsBg']]) {
+    for (const [fg, bg] of [['ink', 'bg'], ['ink', 'surface'], ['ink', 'surface2'], ['muted', 'surface'], ['onPrimary', 'primary'],
+      ['headerInk', 'headerBase'], ['headerInk', 'headerEnd'], ['headerInk', 'tabsBg']]) {
       const r = contrastRatio(t[fg], t[bg]);
       assert.ok(r >= 4.5, k + ': ' + fg + ' on ' + bg + ' is ' + r.toFixed(2));
     }
@@ -58,6 +59,17 @@ test('travelTime handles suffixes, case variants, and far-flung neighborhoods', 
   assert.ok(travelTime('Inwood') >= 55, 'Inwood is far uptown');
   assert.ok(travelTime('Midwood') >= 55, 'Midwood is deep Brooklyn');
   assert.ok(travelTime('Bayside, Queens') >= 50, 'unknown Queens area uses the borough default');
+});
+test('hopKind only calls a hop walkable within a real neighborhood, not a whole borough', () => {
+  const { hopKind } = loadLogic();
+  assert.equal(hopKind({ area: 'Chelsea' }, { area: 'Chelsea' }), 'walk');
+  assert.equal(hopKind({ area: 'Brooklyn' }, { area: 'Brooklyn' }), 'hop', 'two spots tagged just "Brooklyn" are not walkable');
+  assert.equal(hopKind({ area: 'Williamsburg' }, { area: 'Bushwick' }), 'hop');
+  assert.equal(hopKind({ area: 'Midtown' }, { area: 'Williamsburg' }), 'cross');
+  assert.equal(hopKind({ area: 'Narnia' }, { area: 'Atlantis' }), 'cross');
+  assert.notEqual(hopKind({ area: 'New York Harbor' }, { area: 'New York Harbor' }), 'walk', 'a harbor is not a neighborhood');
+  assert.notEqual(hopKind({ area: 'NYC' }, { area: 'NYC' }), 'walk');
+  assert.equal(hopKind({}, { area: 'Chelsea' }), 'cross', 'missing area never throws');
 });
 test('generatePlan keeps a multi-stop plan in one borough before crossing the river', () => {
   const { generatePlan } = loadLogic();

@@ -4,20 +4,21 @@ A bright, fun, New-York-themed web app for finding things to do across the five
 boroughs **and Jersey City**.
 
 **Features**
-- **235 curated spots** across 9 categories (incl. 💕 Date); spots can belong to
+- **224 curated spots** across 9 categories (incl. 💕 Date); spots can belong to
   several categories at once.
 - **Explore** is a split view: a scannable index grouped by borough (or category)
   on the left, and a detail panel for the selected spot on the right. Start with
-  highlights or switch to all 235; the search box covers everything.
-- **Themes**: Brownstone Sunset (default), plus palettes inspired by Sex and the
-  City, Gossip Girl, Friends and Mrs. Maisel. Your pick is remembered.
+  highlights or switch to all 224; the search box covers everything.
+- **Look**: one blended theme mixing Brooklyn-brownstone peach, Sex and the City
+  pinks and Friends purple. **Plan** is its own page: a day builder with a
+  stop-by-stop itinerary, next to your saved plan.
 - **Filters**: mood, budget, area, time, and **travel time from Jersey City** (an
   offline public-transit estimate from Van Vorst St — approximate, not live routing).
 - **🎲 Surprise Me** — a random pick (skips places you've already visited).
 - **✨ Plan my day** (in the Plan tab) — tell it one spot / half day / full day and
   it builds a clustered itinerary from unvisited spots; save it to your plan.
-- **＋ Add your own** — autocomplete recognizes ~600 known places (the 235 shown
-  plus a ~385-place knowledge base) and auto-fills categories, area, budget, mood,
+- **＋ Add your own** — autocomplete recognizes ~600 known places (the 224 shown
+  plus a ~370-place knowledge base) and auto-fills categories, area, budget, mood,
   time, and a description; remove spots you added anytime.
 - **Visited** toggle on every spot with a progress counter.
 

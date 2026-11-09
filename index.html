@@ -7,9 +7,9 @@
 <style>
 /* ==STYLE-START== */
 :root{
-  --bg:#FCEFE8; --surface:#FFFAF6; --surface2:#FBE2D9; --ink:#2B2420; --muted:#6E5248;
-  --line:#E9CFC3; --dot:#EBC2B4; --primary:#A8324F; --on-primary:#FFFFFF; --accent:#E3A72F;
-  --header:linear-gradient(100deg,#F9B4A6 0%,#F7C6D3 50%,#FFD8A8 100%); --header-ink:#2B2420;
+  --bg:#FCEEEA; --surface:#FFFAF7; --surface2:#F8DCE6; --ink:#2A1E2E; --muted:#6A4D5E;
+  --line:#EFD0D8; --dot:#F2BFCF; --primary:#5E2B8C; --on-primary:#FFF3C4; --accent:#F2C230;
+  --header:linear-gradient(100deg,#FBB9A6 0%,#F7AFCB 50%,#D8B4F0 100%); --header-ink:#2A1E2E; --tabs-bg:#FCE4EC;
   --good:#3F7D4E; --danger:#B3261E;
   --serif:"Iowan Old Style","Palatino Linotype","Book Antiqua",Georgia,serif;
 }
@@ -45,7 +45,6 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
 .visit-on{background:var(--good);color:#fff;border-color:var(--good);}
 .danger{color:var(--danger);border-color:var(--danger);}
 select{font:inherit;min-height:44px;border:2px solid var(--line);border-radius:12px;padding:6px 10px;background:var(--surface);color:var(--ink);font-weight:600;}
-.theme-pick{border-radius:999px;}
 
 .notice{max-width:1320px;margin:12px auto 0;padding:10px 16px;border-radius:14px;background:#FFE0A3;color:#2B2420;font-weight:700;border:2px solid #E3A72F;}
 
@@ -56,7 +55,6 @@ main.split{max-width:1320px;margin:0 auto;padding:22px;display:grid;grid-templat
 .pane-list{display:flex;flex-direction:column;overflow:hidden;}
 .list-top{padding:18px 18px 12px;border-bottom:2px dashed var(--line);}
 #index{overflow:auto;flex:1;padding:6px 10px 18px;}
-.plan-pane{overflow:auto;padding:18px;}
 .pane-detail{overflow:auto;}
 
 .progress{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
@@ -86,15 +84,12 @@ details.filters summary{cursor:pointer;font-weight:800;padding:8px 2px;min-heigh
   background:transparent;padding:8px 10px;min-height:54px;font-weight:600;}
 .row:hover{background:var(--surface2);border-color:transparent;border-left-color:var(--line);}
 .row[aria-current="true"]{background:var(--surface2);border-left-color:var(--primary);}
-.row .num{font-family:var(--serif);font-weight:800;color:var(--primary);min-width:1.4rem;}
 .row .em{font-size:1.45rem;width:1.9rem;text-align:center;flex:0 0 auto;}
 .row .txt{flex:1;min-width:0;}
 .row .nm{display:block;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .row .sub{display:block;font-size:.8rem;color:var(--muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .row .marks{flex:0 0 auto;display:flex;gap:4px;align-items:center;}
 .mark-v{color:#fff;background:var(--good);border-radius:999px;font-size:.72rem;padding:1px 8px;font-weight:800;}
-.saved li{display:flex;align-items:center;gap:4px;}
-.saved .row{flex:1;min-width:0;}
 .mini{min-width:44px;padding:4px 8px;border-radius:12px;}
 
 /* detail */
@@ -127,6 +122,28 @@ details.filters summary{cursor:pointer;font-weight:800;padding:8px 2px;min-heigh
 .scope-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}
 .scope-row button{flex:1;min-width:100px;}
 .scope-row button.on{background:var(--primary);color:var(--on-primary);border-color:var(--primary);}
+.plan-layout{max-width:1320px;margin:0 auto;padding:22px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start;}
+.plan-col{padding:20px 22px 26px;}
+.col-sub{font-family:var(--serif);font-size:1.15rem;margin:20px 0 0;}
+.timeline{list-style:none;margin:12px 0 0;padding:0;}
+.stop{background:var(--bg);border:2px solid var(--line);border-radius:18px;}
+.stop.open{background:var(--surface);border-color:var(--primary);box-shadow:0 8px 22px rgba(90,40,80,.10);}
+.stop-head{display:flex;align-items:center;gap:6px;padding:6px 8px 6px 10px;}
+.stop-num{flex:0 0 auto;width:36px;height:36px;border-radius:50%;border:3px solid;background:var(--surface);display:inline-flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:800;color:var(--ink);}
+.stop-main{flex:1;min-width:0;display:flex;align-items:center;gap:10px;border:none;background:transparent;text-align:left;padding:6px 4px;min-height:52px;border-radius:12px;}
+.stop-main:hover{background:var(--surface2);}
+.stop-main .em{font-size:1.45rem;flex:0 0 auto;}
+.stop-main .txt{flex:1;min-width:0;}
+.stop-main .nm{display:block;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.stop-main .sub{display:block;font-size:.8rem;color:var(--muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.stop-main .caret{color:var(--muted);flex:0 0 auto;}
+.stop-ctrls{display:flex;gap:4px;flex:0 0 auto;}
+.stop.visited .stop-main .nm{color:var(--muted);}
+.stop-body{padding:4px 18px 16px 56px;}
+.stop-desc{margin:10px 0 8px;font-family:var(--serif);font-size:1.08rem;line-height:1.55;}
+.vibes-inline{display:flex;gap:6px;flex-wrap:wrap;}
+.stop-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.hop{margin:0 0 0 28px;padding:7px 0 7px 18px;border-left:3px dotted var(--primary);font-size:.82rem;font-weight:700;color:var(--muted);}
 
 /* modal + add form */
 .overlay{position:fixed;inset:0;background:rgba(30,20,20,.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50;}
@@ -153,6 +170,11 @@ details.filters summary{cursor:pointer;font-weight:800;padding:8px 2px;min-heigh
 .pop{animation:pop .4s ease;}
 @keyframes pop{0%{transform:scale(.94);opacity:0;}60%{transform:scale(1.01);}100%{transform:scale(1);opacity:1;}}
 
+@media (max-width:1000px){
+  .stop-head{flex-wrap:wrap;}
+  .stop-ctrls{flex-basis:100%;justify-content:flex-end;padding:0 2px 4px 44px;}
+  .stop-main .nm{white-space:normal;}
+}
 @media (max-width:860px){
   .title{font-size:1.35rem;}
   header.app{position:static;}
@@ -169,15 +191,17 @@ details.filters summary{cursor:pointer;font-weight:800;padding:8px 2px;min-heigh
   .pane-list{overflow:visible;}
   #index{overflow:visible;}
   .group-h{top:0;}
-  .plan-pane{overflow:visible;}
   .pane-detail{display:none;}
-  main.split.detail-open .pane-list,main.split.detail-open .plan-pane{display:none;}
+  main.split.detail-open .pane-list{display:none;}
   main.split.detail-open .pane-detail{display:block;}
   .back{display:inline-flex;}
   .hero{padding:22px 18px 18px;}
   .hero h2{font-size:1.7rem;}
   .facts,.desc,.vibes,.d-actions,.more{padding-left:18px;padding-right:18px;}
   .filter-grid{grid-template-columns:1fr;}
+  .plan-layout{grid-template-columns:minmax(0,1fr);padding:12px;gap:14px;}
+  .plan-col{padding:16px;}
+  .stop-body{padding-left:16px;}
 }
 @media (prefers-reduced-motion:reduce){ .pop{animation:none;} button,.group-h .caret{transition:none;} }
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
@@ -1117,6 +1141,17 @@ function boroughOf(area) {
   return 'Elsewhere';
 }
 
+// How the trip between two consecutive plan stops looks: "walk" within one
+// real neighborhood, "hop" within a borough, "cross" between boroughs. An area
+// that is just a borough name ("Brooklyn") is too coarse to call walkable.
+var BOROUGH_ONLY = ['manhattan', 'brooklyn', 'queens', 'the bronx', 'bronx', 'staten island', 'new york', 'nyc', 'new york harbor', 'jersey city'];
+function hopKind(a, b) {
+  var ka = areaKey(a.area), kb = areaKey(b.area);
+  if (ka && ka === kb && BOROUGH_ONLY.indexOf(ka) === -1) return 'walk';
+  var ba = boroughOf(a.area);
+  return ba !== 'Elsewhere' && ba === boroughOf(b.area) ? 'hop' : 'cross';
+}
+
 // WCAG contrast ratio between two #RRGGBB colors (1..21).
 function contrastRatio(a, b) {
   function lum(hex) {
@@ -1131,39 +1166,16 @@ function contrastRatio(a, b) {
   return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
 }
 
-// Color themes. The default blends Brooklyn brownstone with a Hudson sunset;
-// the rest are inspired by NYC TV shows. `sprinkles` are the emoji scattered
-// in the background; `headerBase` is the solid color text is checked against.
+// The app's one theme: Brooklyn-brownstone peach, Sex and the City blush pinks,
+// and Friends purple with its yellow-frame cream. `sprinkles` are the emoji
+// scattered in the background; headerBase/headerEnd bound the header gradient.
 var THEMES = {
-  brownstone: {
-    label: '🧡 Brownstone Sunset', bg: '#FCEFE8', surface: '#FFFAF6', surface2: '#FBE2D9', ink: '#2B2420', muted: '#6E5248',
-    line: '#E9CFC3', dot: '#EBC2B4', primary: '#A8324F', onPrimary: '#FFFFFF', accent: '#E3A72F',
-    header: 'linear-gradient(100deg,#F9B4A6 0%,#F7C6D3 50%,#FFD8A8 100%)', headerBase: '#F7C6B8', headerInk: '#2B2420', tabsBg: '#FBE0D7',
-    sprinkles: ['🌸', '✨', '🧡', '🍂', '💗', '🌇'],
-  },
-  satc: {
-    label: '👠 Sex and the City', bg: '#FDEAF1', surface: '#FFF8FB', surface2: '#F9D5E3', ink: '#1A1418', muted: '#6B4A5A',
-    line: '#F0C6D6', dot: '#F2B9CE', primary: '#141414', onPrimary: '#F9C9DA', accent: '#C9A24A',
-    header: 'linear-gradient(100deg,#F7A8C4 0%,#FBD3E0 55%,#E9C987 100%)', headerBase: '#F4A6C1', headerInk: '#1A1418', tabsBg: '#FBD3E0',
-    sprinkles: ['👠', '🍸', '💋', '✨', '👜', '💕'],
-  },
-  gossip: {
-    label: '💋 Gossip Girl', bg: '#F5F1E8', surface: '#FFFDF8', surface2: '#EAE2D0', ink: '#1C2B4A', muted: '#4F5B73',
-    line: '#DDD3BE', dot: '#E4D3C6', primary: '#1C2B4A', onPrimary: '#F3DDB0', accent: '#B8945A',
-    header: 'linear-gradient(100deg,#1C2B4A 0%,#2E3F66 100%)', headerBase: '#1C2B4A', headerInk: '#F3DDB0', tabsBg: '#2A3A5E',
-    sprinkles: ['🎀', '👑', '💋', '✨', '📱', '🥂'],
-  },
-  friends: {
-    label: '☕ Friends', bg: '#F7F0DF', surface: '#FFFBF0', surface2: '#EFE3C4', ink: '#2A1E3B', muted: '#5E4E6E',
-    line: '#E3D4AE', dot: '#E2CFA0', primary: '#5B2E91', onPrimary: '#FFF3C4', accent: '#F2C230',
-    header: 'linear-gradient(100deg,#5B2E91 0%,#7A44B8 100%)', headerBase: '#7A44B8', headerInk: '#FFF3C4', tabsBg: '#4A2478',
-    sprinkles: ['☕', '🛋️', '🦞', '🦃', '🎸', '💜'],
-  },
-  maisel: {
-    label: '🎤 Mrs. Maisel', bg: '#FCEFF3', surface: '#FFFAFC', surface2: '#F7DCE5', ink: '#2A1F2D', muted: '#6A4F5E',
-    line: '#EDCAD6', dot: '#BFE3D8', primary: '#B0122B', onPrimary: '#FFFFFF', accent: '#7FCDB8',
-    header: 'linear-gradient(100deg,#F6BFD0 0%,#FFE3EA 50%,#BFE8DC 100%)', headerBase: '#F6C6D4', headerInk: '#2A1F2D', tabsBg: '#FBE0E8',
-    sprinkles: ['🎤', '🍒', '🌸', '✨', '🎙️', '💄'],
+  nyc: {
+    label: '🗽 NYC Sweetheart', bg: '#FCEEEA', surface: '#FFFAF7', surface2: '#F8DCE6', ink: '#2A1E2E', muted: '#6A4D5E',
+    line: '#EFD0D8', dot: '#F2BFCF', primary: '#5E2B8C', onPrimary: '#FFF3C4', accent: '#F2C230',
+    header: 'linear-gradient(100deg,#FBB9A6 0%,#F7AFCB 50%,#D8B4F0 100%)', headerBase: '#F7AFCB', headerEnd: '#D8B4F0',
+    headerInk: '#2A1E2E', tabsBg: '#FCE4EC',
+    sprinkles: ['👠', '☕', '🌸', '💜', '🍸', '🧡', '🛋️', '✨'],
   },
 };
 
@@ -1291,15 +1303,13 @@ function makeStore(storage, key) {
     [44, 95, 1.5, -10], [52, 4, 2.0, 14], [58, 62, 1.4, -22], [64, 22, 1.7, 6], [70, 88, 2.3, -8], [76, 45, 1.5, 18], [82, 10, 1.9, -16],
     [88, 72, 1.6, 10], [94, 34, 2.1, -4], [12, 66, 1.3, 24], [34, 58, 1.8, -12], [48, 74, 1.3, 4], [60, 40, 2.0, -20], [86, 52, 1.4, 16],
     [20, 26, 2.0, -2], [96, 90, 1.7, -24]];
-  var THEME_KEY = 'nyc-todo:theme';
   function titleCase(s) { return String(s).replace(/\b\w/g, function (c) { return c.toUpperCase(); }); }
   function moodOpts() { return MOODS.map(function (m) { return [m, (MOOD_EMOJI[m] || '') + ' ' + titleCase(m)]; }); }
   function emptyFilters() { return { mood: '', budget: '', area: '', time: '', travel: '' }; }
 
   var store = makeStore(safeStorage(window));
   var state = store.load(SEED, V1_RENAMES);
-  var prefs = safeStorage(window);
-  var themeKey = readTheme();
+  var themeKey = 'nyc';
   var tab = 'explore';
   var filters = emptyFilters();
   var filtersOpen = false;
@@ -1314,14 +1324,6 @@ function makeStore(storage, key) {
   var renderedId = null;
   var planGen = { scope: 'half', mood: '', area: '', budget: '', results: [], generated: false };
   var root = document.getElementById('app');
-
-  function readTheme() {
-    try {
-      var k = prefs && prefs.getItem(THEME_KEY);
-      return k && Object.prototype.hasOwnProperty.call(THEMES, k) ? k : 'brownstone';
-    } catch (e) { return 'brownstone'; }
-  }
-  function saveTheme(k) { try { if (prefs) prefs.setItem(THEME_KEY, k); } catch (e) { /* a preference; ignore */ } }
 
   function el(tag, props, kids) {
     var e = document.createElement(tag);
@@ -1408,13 +1410,14 @@ function makeStore(storage, key) {
     state.visited = state.visited.filter(function (v) { return v !== id; });
     state.plan = state.plan.filter(function (p) { return p !== id; });
     if (selectedId === id) { selectedId = null; detailOpen = false; }
+    openStop = null;
     persist(); render();
     toast('🗑️ Removed ' + it.name, 'Undo', function () {
       if (byId(id)) return;
       state.customItems.splice(Math.min(snap.idx, state.customItems.length), 0, it);
       if (snap.visited) state.visited.push(id);
       if (snap.planIdx !== -1) state.plan.splice(Math.min(snap.planIdx, state.plan.length), 0, id);
-      selectedId = id; detailOpen = true;
+      tab = 'explore'; selectedId = id; detailOpen = true;
       persist(); render();
       if (isNarrow()) window.scrollTo(0, 0);
       var title = document.getElementById('d-title');
@@ -1441,7 +1444,7 @@ function makeStore(storage, key) {
     detailOpen = false; syncSplit();
     if (!isNarrow()) return;
     window.scrollTo(0, listScrollY);
-    var row = selectedId && root.querySelector('.pane-list .row[data-id="' + cssEsc(selectedId) + '"], .plan-pane .row[data-id="' + cssEsc(selectedId) + '"]');
+    var row = selectedId && root.querySelector('.pane-list .row[data-id="' + cssEsc(selectedId) + '"]');
     if (row) row.focus({ preventScroll: true });
   }
   function cssEsc(s) { return window.CSS && CSS.escape ? CSS.escape(s) : String(s).replace(/["\\]/g, '\\$&'); }
@@ -1488,7 +1491,6 @@ function makeStore(storage, key) {
     if (inPlan(it.id)) marks.appendChild(el('span', { title: 'In your plan', 'aria-label': 'In your plan', text: '🗓️' }));
     if (it.custom) marks.appendChild(el('span', { title: 'Added by you', 'aria-label': 'Added by you', text: '⭐' }));
     var kids = [];
-    if (opts.num) kids.push(el('span', { class: 'num', text: String(opts.num) }));
     kids.push(el('span', { class: 'em', 'aria-hidden': 'true', text: it.emoji || primary.emoji }));
     kids.push(el('span', { class: 'txt' }, [
       el('span', { class: 'nm', text: it.name }),
@@ -1520,12 +1522,6 @@ function makeStore(storage, key) {
     controls.appendChild(tabs);
     controls.appendChild(el('button', { fk: 'surprise', text: '🎲 Surprise Me', onClick: surprise }));
     controls.appendChild(el('button', { class: 'btn-primary', fk: 'add', text: '＋ Add A Spot', onClick: openAddForm }));
-    var pick = el('select', {
-      class: 'theme-pick', fk: 'theme', 'aria-label': 'Color theme',
-      onChange: function (e) { themeKey = e.target.value; saveTheme(themeKey); applyTheme(); render(); },
-    }, Object.keys(THEMES).map(function (k) { return el('option', { value: k, text: THEMES[k].label }); }));
-    pick.value = themeKey;
-    controls.appendChild(pick);
     bar.appendChild(controls);
     h.appendChild(bar);
     return h;
@@ -1643,28 +1639,115 @@ function makeStore(storage, key) {
     if (t) t.focus({ preventScroll: true });
   }
 
-  // --- plan list ---
+  // --- plan page: its own layout (builder + suggested itinerary | saved plan) ---
+  var openStop = null; // "sug:<id>" or "saved:<id>": the stop expanded in place
   function regenPlan() {
     planGen.results = generatePlan(unvisited(), planGen);
     planGen.generated = true;
+    openStop = null;
     render();
   }
-  function planList() {
-    var pane = el('aside', { class: 'pane plan-pane', id: 'planpane', 'aria-label': 'Plan' });
-    pane.appendChild(el('h2', { class: 'chip-h', text: '✨ Plan My Day' }));
-    pane.appendChild(el('p', { class: 'hint', text: '🕒 How much time have you got? We’ll line up spots you haven’t visited yet, close to each other.' }));
+  // How far the next stop is from the previous one, honestly at neighborhood level.
+  function hopLabel(a, b) {
+    var kind = hopKind(a, b);
+    var bb = boroughOf(b.area);
+    if (kind === 'walk') return '🚶 Same neighborhood — walk over';
+    if (kind === 'hop') return '🚇 Short hop within ' + bb;
+    return bb === 'Elsewhere' ? '🚆 Longer trip to ' + (b.area || 'the next stop') : '🚆 Cross-borough trip to ' + bb;
+  }
+  function openInExplore(id) {
+    tab = 'explore'; selectedId = id; detailOpen = true; popNext = true; listScrollY = 0;
+    render();
+    window.scrollTo(0, 0);
+    var target = isNarrow() ? document.querySelector('#detail .back') : document.getElementById('d-title');
+    if (target) target.focus({ preventScroll: true });
+  }
+  // After a stop leaves a timeline, keep keyboard focus nearby and say what happened.
+  function focusTimeline(prefix, fallbackFk, msg) {
+    var next = root.querySelector('[data-fk^="' + prefix + ':"]') || root.querySelector('[data-fk="' + fallbackFk + '"]');
+    if (next) next.focus({ preventScroll: true });
+    if (msg) announce(msg);
+  }
+  function stopCard(it, num, ctx, controls, hopText) {
+    var key = ctx + ':' + it.id;
+    var open = openStop === key;
+    var visited = isVisited(it.id);
+    var primary = CAT_META[(it.categories || [])[0]] || CAT_META.hidden;
+    var card = el('li', { class: 'stop' + (visited ? ' visited' : '') + (open ? ' open' : '') });
+    var head = el('div', { class: 'stop-head' });
+    var bubble = el('span', { class: 'stop-num', 'aria-hidden': 'true', text: String(num) });
+    bubble.style.borderColor = primary.color;
+    head.appendChild(bubble);
+    head.appendChild(el('button', {
+      class: 'stop-main', fk: key, 'aria-expanded': open ? 'true' : 'false',
+      'aria-label': 'Stop ' + num + ': ' + it.name + (visited ? ', visited' : '') + (hopText ? '. ' + hopText + ' from the previous stop' : ''),
+      onClick: function () { openStop = open ? null : key; render(); },
+    }, [
+      el('span', { class: 'em', 'aria-hidden': 'true', text: it.emoji || primary.emoji }),
+      el('span', { class: 'txt' }, [
+        el('span', { class: 'nm', text: it.name }),
+        el('span', { class: 'sub', text: (it.area || 'New York') + ' · 🚇 ~' + travelTime(it.area) + ' Min From Van Vorst St' }),
+      ]),
+      visited ? el('span', { class: 'mark-v', text: '✓ Visited' }) : null,
+      el('span', { class: 'caret', 'aria-hidden': 'true', text: open ? '▴' : '▾' }),
+    ]));
+    if (controls && controls.length) head.appendChild(el('div', { class: 'stop-ctrls' }, controls));
+    card.appendChild(head);
+    if (!open) return card;
+
+    var body = el('div', { class: 'stop-body' });
+    body.appendChild(badges(it.categories));
+    if (it.blurb) body.appendChild(el('p', { class: 'stop-desc', text: it.blurb }));
+    var chips = el('div', { class: 'vibes-inline' });
+    [BUDGET_LABEL[it.budget] || it.budget, TIME_LABEL[it.time] || it.time].concat((it.moods || []).map(function (m) {
+      return (MOOD_EMOJI[m] || '') + ' ' + titleCase(m);
+    })).forEach(function (t) { chips.appendChild(el('span', { class: 'vibe', text: t })); });
+    body.appendChild(chips);
+    var acts = el('div', { class: 'stop-acts' });
+    acts.appendChild(el('button', {
+      class: visited ? 'visit-on' : 'btn-primary', fk: key + ':visit', 'aria-pressed': visited ? 'true' : 'false',
+      text: visited ? '✓ Visited' : '✅ Mark Visited',
+      onClick: function () {
+        toggleVisited(it.id);
+        if (ctx === 'sug' && !visited) focusTimeline('sug', 'p-shuffle', 'Marked ' + it.name + ' visited. It’s off the suggestions now.');
+      },
+    }));
+    if (ctx === 'sug') {
+      acts.appendChild(el('button', {
+        fk: key + ':plan', text: inPlan(it.id) ? '➖ Remove From My Plan' : '🗓️ Add To My Plan', onClick: function () { togglePlan(it.id); },
+      }));
+    }
+    acts.appendChild(el('button', { fk: key + ':explore', text: '🧭 See In Explore', onClick: function () { openInExplore(it.id); } }));
+    body.appendChild(acts);
+    card.appendChild(body);
+    return card;
+  }
+  function itinerary(items, ctx, controlsFor) {
+    var ol = el('ol', { class: 'timeline' });
+    items.forEach(function (it, i) {
+      if (i > 0) ol.appendChild(el('li', { class: 'hop', 'aria-hidden': 'true', text: hopLabel(items[i - 1], it) }));
+      ol.appendChild(stopCard(it, i + 1, ctx, controlsFor ? controlsFor(it) : null, i > 0 ? hopLabel(items[i - 1], it).replace(/^\S+\s/, '') : ''));
+    });
+    return ol;
+  }
+  function planPage() {
+    var page = el('main', { id: 'planpage', class: 'plan-layout' });
+
+    var left = el('section', { class: 'pane plan-col', 'aria-label': 'Plan my day' });
+    left.appendChild(el('h2', { class: 'chip-h', text: '✨ Plan My Day' }));
+    left.appendChild(el('p', { class: 'hint', text: '🕒 How much time have you got? We’ll line up spots you haven’t visited yet, close to each other.' }));
     var sr = el('div', { class: 'scope-row' });
     [['one', '🎯 One Spot'], ['half', '🌤️ Half Day'], ['full', '🌆 Full Day']].forEach(function (o) {
       var on = planGen.scope === o[0];
       sr.appendChild(el('button', { class: on ? 'on' : '', fk: 'scope-' + o[0], 'aria-pressed': on ? 'true' : 'false', text: o[1], onClick: function () { planGen.scope = o[0]; regenPlan(); } }));
     });
-    pane.appendChild(sr);
+    left.appendChild(sr);
     var fg = el('div', { class: 'filter-grid' });
     function setP(k) { return function (v) { planGen[k] = v; regenPlan(); }; }
     fg.appendChild(selectBox('😎 Mood', planGen.mood, moodOpts(), setP('mood'), 'p-mood'));
     fg.appendChild(selectBox('📍 Area', planGen.area, deriveAreas(catalog()), setP('area'), 'p-area'));
     fg.appendChild(selectBox('💵 Budget', planGen.budget, BUDGETS.map(function (b) { return [b, BUDGET_LABEL[b]]; }), setP('budget'), 'p-budget'));
-    pane.appendChild(fg);
+    left.appendChild(fg);
 
     if (!planGen.generated) { planGen.results = generatePlan(unvisited(), planGen); planGen.generated = true; }
     var shown = planGen.results.filter(function (it) { return !isVisited(it.id) && byId(it.id); });
@@ -1676,33 +1759,33 @@ function makeStore(storage, key) {
         onClick: function () { shown.forEach(function (it) { if (!inPlan(it.id)) state.plan.push(it.id); }); persist(); render(); },
       }));
     }
-    pane.appendChild(acts);
+    left.appendChild(acts);
     if (!shown.length) {
-      pane.appendChild(el('p', { class: 'hintline', text: '🤷 No unvisited spots match — loosen the options above.' }));
+      left.appendChild(el('p', { class: 'hintline', text: '🤷 No unvisited spots match — loosen the options above.' }));
     } else {
-      var ul = el('ul', { class: 'rows' });
-      shown.forEach(function (it, i) { ul.appendChild(el('li', {}, [spotRow(it, { num: i + 1 })])); });
-      pane.appendChild(ul);
+      left.appendChild(el('h3', { class: 'col-sub', text: '🗺️ Suggested Itinerary' }));
+      left.appendChild(itinerary(shown, 'sug'));
     }
 
-    pane.appendChild(el('h2', { class: 'chip-h', text: '🗓️ Your Saved Plan' + (state.plan.length ? ' (' + state.plan.length + ')' : '') }));
-    if (!state.plan.length) {
-      pane.appendChild(el('p', { class: 'hintline', text: '🫙 Nothing saved yet — add the suggestions above, or tap “Add To Plan” on any spot.' }));
-      return pane;
+    var right = el('section', { class: 'pane plan-col', 'aria-label': 'Your saved plan' });
+    right.appendChild(el('h2', { class: 'chip-h', text: '🗓️ Your Saved Plan' + (state.plan.length ? ' (' + state.plan.length + ')' : '') }));
+    var saved = state.plan.map(byId).filter(Boolean);
+    if (!saved.length) {
+      right.appendChild(el('p', { class: 'hintline', text: '🫙 Nothing saved yet — add the suggestions, or tap “Add To Plan” on any spot in Explore.' }));
+    } else {
+      var done = saved.filter(function (it) { return isVisited(it.id); }).length;
+      right.appendChild(el('p', { class: 'hint', text: '✅ ' + done + ' of ' + saved.length + ' done · Tap a stop for details' }));
+      right.appendChild(itinerary(saved, 'saved', function (it) {
+        return [
+          el('button', { class: 'mini', fk: 'up-' + it.id, 'aria-label': 'Move ' + it.name + ' up', text: '⬆️', onClick: function () { movePlan(it.id, -1); } }),
+          el('button', { class: 'mini', fk: 'down-' + it.id, 'aria-label': 'Move ' + it.name + ' down', text: '⬇️', onClick: function () { movePlan(it.id, 1); } }),
+          el('button', { class: 'mini', fk: 'x-' + it.id, 'aria-label': 'Remove ' + it.name + ' from plan', text: '✕', onClick: function () { togglePlan(it.id); focusTimeline('saved', 'p-shuffle', 'Removed ' + it.name + ' from your plan.'); } }),
+        ];
+      }));
     }
-    var sv = el('ul', { class: 'rows saved' });
-    state.plan.forEach(function (id, i) {
-      var it = byId(id);
-      if (!it) return;
-      sv.appendChild(el('li', {}, [
-        spotRow(it, { num: i + 1, fkPrefix: 'saved-' }),
-        el('button', { class: 'mini', fk: 'up-' + id, 'aria-label': 'Move ' + it.name + ' up', text: '⬆️', onClick: function () { movePlan(id, -1); } }),
-        el('button', { class: 'mini', fk: 'down-' + id, 'aria-label': 'Move ' + it.name + ' down', text: '⬇️', onClick: function () { movePlan(id, 1); } }),
-        el('button', { class: 'mini', fk: 'x-' + id, 'aria-label': 'Remove ' + it.name + ' from plan', text: '✕', onClick: function () { togglePlan(id); } }),
-      ]));
-    });
-    pane.appendChild(sv);
-    return pane;
+    page.appendChild(left);
+    page.appendChild(right);
+    return page;
   }
 
   // --- detail ---
@@ -1810,6 +1893,7 @@ function makeStore(storage, key) {
       return;
     }
     listScrollY = 0;
+    tab = 'explore';
     selectedId = pick.id; detailOpen = true; popNext = true;
     render();
     if (isNarrow()) window.scrollTo(0, 0);
@@ -2044,7 +2128,7 @@ function makeStore(storage, key) {
 
   function render() {
     var keep = {};
-    ['index', 'planpane'].forEach(function (id) { var n = document.getElementById(id); if (n) keep[id] = n.scrollTop; });
+    ['index'].forEach(function (id) { var n = document.getElementById(id); if (n) keep[id] = n.scrollTop; });
     var fk = focusKey();
     var detailEl = document.getElementById('detail');
     var detailTop = detailEl && renderedId === selectedId ? detailEl.scrollTop : 0;
@@ -2057,11 +2141,15 @@ function makeStore(storage, key) {
     if (!store.available) {
       root.appendChild(el('div', { class: 'notice', role: 'status', text: '⚠️ Heads Up: this browser isn’t saving changes (private mode?), so your marks won’t stick here.' }));
     }
-    var main = el('main', { id: 'split', class: 'split' + (detailOpen ? ' detail-open' : '') });
-    main.appendChild(tab === 'plan' ? planList() : exploreList());
-    main.appendChild(detailPane());
-    root.appendChild(main);
-    if (tab === 'explore') renderIndex(true);
+    if (tab === 'plan') {
+      root.appendChild(planPage());
+    } else {
+      var main = el('main', { id: 'split', class: 'split' + (detailOpen ? ' detail-open' : '') });
+      main.appendChild(exploreList());
+      main.appendChild(detailPane());
+      root.appendChild(main);
+      renderIndex(true);
+    }
     Object.keys(keep).forEach(function (id) { var n = document.getElementById(id); if (n) n.scrollTop = keep[id]; });
     var d = document.getElementById('detail');
     if (d) d.scrollTop = detailTop;
