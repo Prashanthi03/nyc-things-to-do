@@ -71,6 +71,108 @@ test('hopKind only calls a hop walkable within a real neighborhood, not a whole 
   assert.notEqual(hopKind({ area: 'NYC' }, { area: 'NYC' }), 'walk');
   assert.equal(hopKind({}, { area: 'Chelsea' }), 'cross', 'missing area never throws');
 });
+// --- real distances (coordinates) ---
+const TSQ = { id: 'tsq', name: 'Times Square', area: 'Midtown', lat: 40.7580, lng: -73.9855, categories: ['iconic'] };
+const ESB = { id: 'esb', name: 'Empire State Building', area: 'Midtown', lat: 40.7484, lng: -73.9857, categories: ['iconic'] };
+test('distanceMeters uses great-circle distance and tolerates missing coordinates', () => {
+  const { distanceMeters } = loadLogic();
+  const d = distanceMeters(TSQ, ESB);
+  assert.ok(d > 1000 && d < 1130, 'Times Square to ESB is about 1.07 km, got ' + d);
+  assert.equal(distanceMeters(TSQ, { name: 'nowhere' }), null);
+});
+test('hopInfo says walk for short hops and transit for longer ones, in miles', () => {
+  const { hopInfo } = loadLogic();
+  const near = hopInfo(TSQ, { area: 'Midtown', lat: 40.7587, lng: -73.9787 });
+  assert.equal(near.mode, 'walk');
+  assert.match(near.label, /mi · ~\d+ min walk$/);
+  const far = hopInfo(TSQ, { area: 'Financial District', lat: 40.7033, lng: -73.9881 });
+  assert.equal(far.mode, 'transit');
+  assert.match(far.label, /mi · ~\d+ min by transit$/);
+  assert.ok(far.minutes > near.minutes);
+  assert.equal(hopInfo(TSQ, { name: 'no coords' }), null);
+});
+test('locate falls back to the center of known spots in the same area', () => {
+  const { locate } = loadLogic();
+  const p = locate({ name: 'My Spot', area: 'Midtown', custom: true }, [TSQ, ESB]);
+  assert.ok(Math.abs(p.lat - 40.7532) < 0.001 && Math.abs(p.lng - -73.9856) < 0.001);
+  assert.equal(locate({ name: 'x', area: 'Narnia' }, [TSQ, ESB]), null);
+});
+test('nearbyFood lists close food spots with walk time, nearest first, excluding the spot itself', () => {
+  const { nearbyFood } = loadLogic();
+  const food = (id, lat, lng) => ({ id, name: id, area: 'Midtown', lat, lng, categories: ['food'], cuisine: 'Pizza', budget: '$', moods: ['foodie'] });
+  const pool = [food('f-far', 40.70, -74.00), food('f-mid', 40.7550, -73.9855), food('f-close', 40.7575, -73.9855), TSQ, ESB];
+  const r = nearbyFood(TSQ, pool, { limit: 5 });
+  assert.deepEqual(r.map(x => x.item.id), ['f-close', 'f-mid']);
+  assert.ok(r[0].walkMin <= r[1].walkMin);
+  assert.ok(nearbyFood(r[0].item, pool).every(x => x.item.id !== 'f-close'), 'never recommends itself');
+});
+test('nearbyFood recommends places to eat, not whole neighborhoods tagged food', () => {
+  const { nearbyFood } = loadLogic();
+  const pool = [
+    { id: 'hood', name: 'Chinatown', area: 'Midtown', lat: 40.7576, lng: -73.9855, categories: ['neighborhoods', 'food'], cuisine: 'Eclectic', budget: '$', moods: [] },
+    { id: 'eat', name: 'Dumpling Spot', area: 'Midtown', lat: 40.7578, lng: -73.9855, categories: ['food'], cuisine: 'Dumplings', budget: '$', moods: [] },
+  ];
+  assert.deepEqual(nearbyFood(TSQ, pool).map(r => r.item.id), ['eat']);
+});
+test('nearbyFood widens the radius when the close circle is nearly empty', () => {
+  const { nearbyFood } = loadLogic();
+  const pool = [{ id: 'f1', name: 'f1', area: 'Upper West Side', lat: 40.7740, lng: -73.9855, categories: ['food'], cuisine: 'Bagels', budget: '$', moods: [] }];
+  assert.equal(nearbyFood(TSQ, pool).length, 1, 'a ~1.8 km spot appears once the radius widens');
+});
+test('generatePlan orders stops so each next stop is the nearest remaining one', () => {
+  const { generatePlan } = loadLogic();
+  const s = (id, lat) => ({ id, name: id, area: 'Midtown', lat, lng: -73.9855, moods: ['chill'], budget: '$', time: 'half', categories: ['iconic'] });
+  const items = [s('a', 40.7500), s('far', 40.7900), s('b', 40.7520), s('c', 40.7545)];
+  const plan = generatePlan(items, { scope: 'half' }, () => 0.999);
+  assert.deepEqual(plan.map(p => p.id), ['a', 'b', 'c']);
+});
+test('generatePlan can include a custom spot (no coordinates) via its neighborhood center', () => {
+  const { generatePlan } = loadLogic();
+  const s = (id, lat) => ({ id, name: id, area: 'Midtown', lat, lng: -73.9855, moods: ['chill'], budget: '$', time: 'half', categories: ['iconic'] });
+  const mine = { id: 'c_1_me', name: 'My Midtown Spot', area: 'Midtown', moods: ['chill'], budget: '$', time: 'half', categories: ['hidden'], custom: true };
+  const plan = generatePlan([s('a', 40.7500), s('b', 40.7600), mine], { scope: 'half' }, () => 0.999);
+  assert.ok(plan.some(p => p.id === 'c_1_me'), 'custom spot was dropped from the plan');
+});
+// --- water, coarse areas, and recognized places ---
+const FIDI = { id: 'fidi', name: 'Stone Street', area: 'Financial District', lat: 40.7041, lng: -74.0105, categories: ['food'], cuisine: 'Pub', budget: '$$', moods: [] };
+const RIVERCAFE = { id: 'rc', name: 'The River Cafe', area: 'DUMBO', lat: 40.7037, lng: -73.9947, categories: ['food'], cuisine: 'American', budget: '$$$', moods: [] };
+test('hopInfo never suggests walking across water', () => {
+  const { hopInfo } = loadLogic();
+  const h = hopInfo(FIDI, RIVERCAFE);
+  assert.notEqual(h.mode, 'walk', 'Financial District to DUMBO crosses the East River');
+  const gov = { id: 'gov', name: 'Governors Island', area: 'Governors Island', lat: 40.6895, lng: -74.0168 };
+  const red = { id: 'red', name: 'Red Hook Spot', area: 'Red Hook', lat: 40.6780, lng: -74.0100 };
+  assert.match(hopInfo(gov, red).label, /ferry/i, 'island hops say ferry');
+});
+test('nearbyFood only suggests places you can walk to (same landmass)', () => {
+  const { nearbyFood } = loadLogic();
+  const gov = { id: 'gov', name: 'Governors Island', area: 'Governors Island', lat: 40.6895, lng: -74.0168, categories: ['parks'] };
+  const brooklynEat = { id: 'b', name: 'Brooklyn Eats', area: 'Red Hook', lat: 40.6800, lng: -74.0110, categories: ['food'], cuisine: 'Pizza', budget: '$', moods: [] };
+  assert.deepEqual(nearbyFood(gov, [brooklynEat]), []);
+  assert.deepEqual(nearbyFood(FIDI, [RIVERCAFE]), [], 'no River Cafe "walk" from the Financial District');
+});
+test('a custom spot whose area is a whole borough gets no fake coordinates', () => {
+  const { locate } = loadLogic();
+  assert.equal(locate({ name: 'Mine', area: 'Brooklyn', custom: true }, [RIVERCAFE, { area: 'Brooklyn', lat: 40.68, lng: -73.95 }]), null);
+});
+test('generatePlan fills the plan even when some picks have no location', () => {
+  const { generatePlan } = loadLogic();
+  const seedOne = { id: 's', name: 's', area: 'Midtown', lat: 40.75, lng: -73.98, moods: ['chill'], budget: '$', time: 'half', categories: ['iconic'] };
+  const c1 = { id: 'c_1', name: 'Hoboken Spot', area: 'Hoboken', moods: ['chill'], budget: '$', time: 'half', categories: ['hidden'], custom: true };
+  const c2 = { id: 'c_2', name: 'Montclair Spot', area: 'Montclair', moods: ['chill'], budget: '$', time: 'half', categories: ['hidden'], custom: true };
+  for (const r of [0, 0.4, 0.999]) assert.equal(generatePlan([seedOne, c1, c2], { scope: 'half' }, () => r).length, 3);
+});
+test('enrich returns location and food details for a recognized place, and Add keeps them', () => {
+  const { enrich, addCustomItem } = loadLogic();
+  const lib = [{ id: 'kb-x', name: 'Test Dumplings', categories: ['food'], area: 'Chinatown', budget: '$', moods: ['foodie'], time: 'quick',
+    blurb: 'b', lat: 40.715, lng: -73.998, cuisine: 'Dumplings', reputation: 'local', reservation: 'walk-in' }];
+  const e = enrich('Test Dumplings', lib);
+  assert.equal(e.lat, 40.715); assert.equal(e.cuisine, 'Dumplings'); assert.equal(e.reservation, 'walk-in');
+  const r = addCustomItem([], { name: 'Test Dumplings', categories: ['food'], lat: e.lat, lng: e.lng, cuisine: e.cuisine, reputation: e.reputation, reservation: e.reservation }, []);
+  assert.equal(r.item.lat, 40.715); assert.equal(r.item.cuisine, 'Dumplings'); assert.equal(r.item.reputation, 'local');
+  const bad = addCustomItem([], { name: 'Odd', lat: 'x', reputation: 'amazing', reservation: 'maybe' }, []);
+  assert.equal(bad.item.lat, undefined); assert.equal(bad.item.reputation, undefined); assert.equal(bad.item.reservation, undefined);
+});
 test('generatePlan keeps a multi-stop plan in one borough before crossing the river', () => {
   const { generatePlan } = loadLogic();
   const items = [

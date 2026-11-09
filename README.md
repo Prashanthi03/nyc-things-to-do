@@ -18,9 +18,14 @@ boroughs **and Jersey City**.
 - **✨ Plan my day** (in the Plan tab) — tell it one spot / half day / full day and
   it builds a clustered itinerary from unvisited spots; save it to your plan.
 - **＋ Add your own** — autocomplete recognizes ~600 known places (the 224 shown
-  plus a ~370-place knowledge base) and auto-fills categories, area, budget, mood,
+  plus a 368-place knowledge base) and auto-fills categories, area, budget, mood,
   time, and a description; remove spots you added anytime.
 - **Visited** toggle on every spot with a progress counter.
+- **🍽️ Eat Nearby** on every spot: famous food within walking distance, with
+  cuisine, budget, walk time, reputation and whether you need a reservation, plus
+  a **⭐ Live Rating** link to Google Maps for current ratings and hours.
+- **📍 Also Nearby** and distance-aware plans: stops are chained nearest-first and
+  every hop says how far it is and whether to walk, take transit or the ferry.
 
 It's a **single self-contained `index.html`** — all HTML, CSS, and JavaScript
 inline, no frameworks, no build step, and **no external network requests**. Open

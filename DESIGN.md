@@ -45,10 +45,18 @@ Each spot: `id` (hand-authored slug), `name`, `categories[]` (1–3), `emoji`,
 **Coverage:** all five boroughs plus Jersey City (19 shown spots). Stale or
 unsafe places are excluded (e.g. Dead Horse Bay, the Freedom Tunnel).
 
-### Add-recognition library (`KB_EXTRA`, 372 places)
+### Add-recognition library (`KB_EXTRA`, 368 places)
 Same shape as SEED, never shown in Explore. Together with SEED it gives the Add
 form about 600 recognizable places. No KB entry repeats a shown spot's name or
 alias (data test).
+
+### Locations and food details
+Every shown and recognized place has `lat`/`lng` (checked against a rough box
+for its borough by a data test). Every food place also has `cuisine`,
+`reputation` (legendary / acclaimed / local) and `reservation` (required /
+recommended / walk-in). Live star ratings are not stored: they change and can't
+be fetched without a network call, so the UI links to Google Maps instead.
+Places that have moved were updated; ones that may have closed were removed.
 
 ### Per-person state (localStorage)
 `{ schemaVersion: 2, visited: [ids], plan: [ordered ids], customItems: [spots] }`
@@ -98,20 +106,24 @@ notice instead of a blank page or silent data loss.
 - **Right: detail.** Big emoji and name, category badges, facts (where, budget,
   time needed, travel estimate), description, vibes, ✅ Mark Visited,
   🗓️ Add To Plan, 🗑️ Delete My Spot (custom only, with Undo), and
-  "📍 More In <area/borough>" (unvisited spots nearby).
+  **🍽️ Eat Nearby** and **📍 Also Nearby** (see Distances). Food rows show
+  cuisine · budget · walk time, then reputation · reservations · vibe, and a
+  ⭐ Live Rating ↗ link (Google Maps search, opens in a new tab). A row that is
+  itself a shown spot links to it.
 - **Phones (≤ 860px):** list and detail are separate screens with a Back button;
   the header compacts into one swipeable row.
 
 ### Plan (its own page)
 - **Left: Plan My Day.** Choose 🎯 One Spot / 🌤️ Half Day / 🌆 Full Day
   (1/3/5 stops) plus optional mood, area and budget. `generatePlan` draws only
-  from **unvisited** spots, shuffles, then fills same area → same borough → the
-  rest, so days stay compact. Shuffle, or Add All To My Plan.
+  from **unvisited** spots, then chains them nearest-neighbor by real distance;
+  picks without a location still fill the plan. Without coordinates it falls
+  back to same area → same borough → the rest. Shuffle, or Add All To My Plan.
 - **Right: Your Saved Plan** with a "N of M done" counter; move up/down, remove.
-- Both are numbered **stop timelines**. Between stops, `hopKind` labels the trip:
-  🚶 same neighborhood (walk), 🚇 short hop within a borough, 🚆 cross-borough.
-  An area that is only a borough name ("Brooklyn", "Jersey City", "NYC") is never
-  called walkable.
+- Both are numbered **stop timelines**. Between stops, `hopInfo` gives the
+  distance and mode (see Distances); if a stop can't be located, `hopKind`
+  falls back to 🚶 same neighborhood / 🚇 within a borough / 🚆 cross-borough.
+  Each stop lists its 3 closest food spots.
 - Tap a stop to expand it in place (description, vibes, Mark Visited,
   Add/Remove, 🧭 See In Explore).
 
@@ -145,6 +157,18 @@ City** (by Grove St PATH). Looks up the neighborhood part of the area
 case-insensitively in a ~100-entry table, else falls back to a per-borough
 default. An estimate, not live routing; the UI labels it as such.
 
+### Distances
+- `locate(item)`: the place's own coordinates, else the average of known places
+  in its area (for custom spots). An area that is only a borough name gives no
+  location, so nothing pretends to be precise.
+- `distanceMeters`: haversine. `walkGroup` keeps walks on one landmass:
+  Brooklyn + Queens share one, Roosevelt Island and the harbor islands are their
+  own, each borough otherwise.
+- `hopInfo`: ≤ 1300 m on the same landmass → 🚶 walk at 80 m/min; to or from a
+  harbor island → ⛴️ take the ferry; otherwise 🚇 transit ≈ 8 min + 3 min/km.
+- `nearbyFood` / `nearbySpots`: same landmass, within 1.2 km (widened to 2.4 km
+  if fewer than 3), nearest first, excluding the spot itself.
+
 ## Look and accessibility
 - **One theme ("NYC Sweetheart")**: Brooklyn-brownstone peach, Sex and the City
   blush pinks, Friends purple with yellow-frame cream; peach → pink → lavender
@@ -159,10 +183,13 @@ default. An estimate, not live routing; the UI labels it as such.
 
 ## Testing
 `node --test test/` (Node 16, no dependencies):
-- `test/logic.test.js` (41): dedup, reconcile/migration, enrich, search,
-  filters, Surprise, plan generation and clustering, hop labels, travel time,
+- `test/logic.test.js` (54): dedup, reconcile/migration, enrich, search,
+  filters, Surprise, plan generation and nearest-neighbor ordering, distances,
+  walk/ferry rules, Eat Nearby, hop labels, travel time,
   borough mapping, storage failure, theme contrast.
-- `test/data.test.js` (12): catalog shape and size, unique names/aliases,
+- `test/data.test.js` (17): catalog shape and size, coordinates inside each
+  borough, food details present, Eat Nearby coverage, no network loads, unique
+  names/aliases,
   KB/catalog disjointness, every v1 id resolves, rename targets exist, stale
   spots absent, borough coverage, key names recognized and generic ones not.
 

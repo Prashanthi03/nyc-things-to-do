@@ -90,6 +90,45 @@ test('common names for well-known spots are recognized, generic phrases are not'
   }
 });
 
+// Rough lat/lng boxes per borough: they overlap, but catch gross geocoding errors.
+const BOXES = {
+  'Jersey City': [40.66, 40.77, -74.12, -74.02],
+  Manhattan: [40.68, 40.88, -74.03, -73.90],
+  Brooklyn: [40.56, 40.74, -74.05, -73.83],
+  Queens: [40.54, 40.81, -73.97, -73.70],
+  'The Bronx': [40.78, 40.92, -73.94, -73.76],
+  'Staten Island': [40.49, 40.65, -74.26, -74.05],
+  'Harbor Islands': [40.67, 40.71, -74.05, -74.01],
+};
+test('every place has coordinates inside its own borough', () => {
+  const { SEED, KB_EXTRA, boroughOf } = loadLogic();
+  const bad = [];
+  for (const it of SEED.concat(KB_EXTRA)) {
+    if (typeof it.lat !== 'number' || typeof it.lng !== 'number') { bad.push(it.name + ': no coordinates'); continue; }
+    const box = BOXES[boroughOf(it.area)];
+    if (!box) continue;
+    const [la1, la2, ln1, ln2] = box;
+    if (it.lat < la1 || it.lat > la2 || it.lng < ln1 || it.lng > ln2) bad.push(it.name + ' (' + it.area + ') at ' + it.lat + ',' + it.lng);
+  }
+  assert.deepEqual(bad, []);
+});
+
+test('every food place has a cuisine', () => {
+  const { SEED, KB_EXTRA } = loadLogic();
+  const missing = SEED.concat(KB_EXTRA).filter(i => i.categories.includes('food') && !i.cuisine).map(i => i.name);
+  assert.deepEqual(missing, []);
+});
+
+test('Eat Nearby finds food for most shown spots, and Chinatown gets Chinatown food', () => {
+  const { SEED, KB_EXTRA, nearbyFood } = loadLogic();
+  const pool = SEED.concat(KB_EXTRA);
+  const withFood = SEED.filter(s => nearbyFood(s, pool).length > 0).length;
+  assert.ok(withFood / SEED.length > 0.85, 'only ' + withFood + ' of ' + SEED.length + ' spots have nearby food');
+  const ct = SEED.find(s => s.name === 'Chinatown');
+  const picks = nearbyFood(ct, pool);
+  assert.ok(picks.length >= 3 && picks[0].meters < 600, 'Chinatown should have close food picks');
+});
+
 test('stale or unsafe spots are not listed', () => {
   const { SEED, KB_EXTRA } = loadLogic();
   const bad = /breuer|rubin museum|dead horse bay|freedom tunnel|westlight rooftop garden/i;
@@ -128,4 +167,19 @@ test('enrich recognizes a KB_EXTRA-only place and fills a blurb', () => {
   assert.equal(e.source, 'kb');
   assert.deepEqual(e.categories, sample.categories);
   assert.ok(e.blurb.length > 0);
+});
+
+test('the app makes no network requests (plain outbound links are allowed)', () => {
+  const fs = require('node:fs');
+  const html = fs.readFileSync(require('./extract').HTML_PATH, 'utf8');
+  const loads = [/<script[^>]+src=/i, /<link\b/i, /<img\b/i, /<iframe\b/i, /@import/i, /url\(\s*['"]?https?:/i,
+    /\bfetch\(/, /XMLHttpRequest/, /new\s+WebSocket/, /navigator\.sendBeacon/, /\.innerHTML\s*=/];
+  assert.deepEqual(loads.filter(re => re.test(html)).map(String), []);
+});
+
+test('every food place has a reputation and a reservation policy', () => {
+  const { SEED, KB_EXTRA } = loadLogic();
+  const bad = SEED.concat(KB_EXTRA).filter(i => i.categories.includes('food') &&
+    (!['legendary', 'acclaimed', 'local'].includes(i.reputation) || !['required', 'recommended', 'walk-in'].includes(i.reservation))).map(i => i.name);
+  assert.deepEqual(bad, []);
 });
