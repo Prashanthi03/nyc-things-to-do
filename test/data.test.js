@@ -183,3 +183,48 @@ test('every food place has a reputation and a reservation policy', () => {
     (!['legendary', 'acclaimed', 'local'].includes(i.reputation) || !['required', 'recommended', 'walk-in'].includes(i.reservation))).map(i => i.name);
   assert.deepEqual(bad, []);
 });
+
+const isDateEatery = (i) => i.categories.includes('date') && i.categories.includes('food') && !i.categories.includes('neighborhoods');
+
+test('Date Night restaurants: full details, and no steakhouses, pork-focused or (beyond one) seafood places', () => {
+  const { SEED, KB_EXTRA } = loadLogic();
+  const eats = SEED.filter(isDateEatery);
+  assert.ok(eats.length >= 35, 'only ' + eats.length + ' Date Night restaurants');
+  const bad = eats.filter((i) => !i.cuisine || !i.reputation || !i.reservation || !['casual', 'smart-casual', 'dressy'].includes(i.dress) ||
+    !i.vibe || !Array.isArray(i.dateWhen) || !i.dateWhen.includes('night')).map((i) => i.name);
+  assert.deepEqual(bad, [], 'missing details');
+  const meaty = /steak|chophouse|pork|barbecue|\bbbq\b|burger|charcuterie|meat/i;
+  assert.deepEqual(eats.filter((i) => meaty.test(i.name + ' ' + i.cuisine + ' ' + i.blurb)).map((i) => i.name), []);
+  const seafood = eats.filter((i) => /seafood|sushi|oyster|fish|omakase/i.test(i.cuisine)).map((i) => i.name);
+  assert.ok(seafood.length <= 1, 'too much seafood: ' + seafood.join(', '));
+  // Recognized places carry their categories when added, so they follow the rules too.
+  const kbDates = KB_EXTRA.filter(isDateEatery).filter((i) => meaty.test(i.name + ' ' + i.cuisine + ' ' + i.blurb) || /seafood|oyster/i.test(i.cuisine));
+  assert.deepEqual(kbDates.map((i) => i.name), []);
+});
+
+test('Date Night restaurants cover Manhattan, Brooklyn, Queens and Jersey City, with lunch options', () => {
+  const { SEED, boroughOf } = loadLogic();
+  const eats = SEED.filter(isDateEatery);
+  const per = {};
+  eats.forEach((i) => { per[boroughOf(i.area)] = (per[boroughOf(i.area)] || 0) + 1; });
+  for (const [b, min] of [['Manhattan', 15], ['Brooklyn', 5], ['Queens', 2], ['Jersey City', 4]]) assert.ok((per[b] || 0) >= min, b + ': ' + (per[b] || 0));
+  assert.ok(eats.filter((i) => i.dateWhen.includes('day')).length >= 15, 'too few lunch spots for a half-day date');
+});
+
+test('every Date Night activity says when it suits a date and whether it is outdoors', () => {
+  const { SEED } = loadLogic();
+  const bad = SEED.filter((i) => i.categories.includes('date') && !isDateEatery(i))
+    .filter((i) => !Array.isArray(i.dateWhen) || !i.dateWhen.length || i.dateWhen.some((w) => !['day', 'evening', 'night'].includes(w)) || typeof i.outdoor !== 'boolean')
+    .map((i) => i.name);
+  assert.deepEqual(bad, []);
+});
+
+test('a Date Night (Outdoors) plan from most Manhattan, Brooklyn and Jersey City restaurants has an outdoor stop', () => {
+  const { SEED, generatePlan, boroughOf } = loadLogic();
+  const eats = SEED.filter((i) => isDateEatery(i) && ['Manhattan', 'Brooklyn', 'Jersey City'].includes(boroughOf(i.area)));
+  const lonely = eats.filter((r) => {
+    const plan = generatePlan(SEED.filter((s) => s === r || !isDateEatery(s)), { scope: 'date-night' }, () => 0, SEED);
+    return plan.length < 2;
+  }).map((r) => r.name);
+  assert.ok(lonely.length <= 2, 'no outdoor stop near: ' + lonely.join(', '));
+});

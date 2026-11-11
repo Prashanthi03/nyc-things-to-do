@@ -30,22 +30,22 @@ The script has two marked blocks:
 
 ## Data
 
-### Catalog (`SEED`, 224 shown spots)
+### Catalog (`SEED`, 259 shown spots)
 Each spot: `id` (hand-authored slug), `name`, `categories[]` (1–3), `emoji`,
 `area`, `budget` (`free` | `$` | `$$` | `$$$`), `moods[]` (1–3), `time`
 (`quick` | `half` | `full`), `blurb`, optional `aliases[]`, and `featured`
-(61 curated highlights).
+(67 curated highlights).
 
 **Categories (9), a spot can have several:** 🗽 Iconic · 🎨 Museums · 🌳 Parks ·
 🍕 Food · 🏙️ Neighborhoods · 🎭 Nightlife (`shows`) · 💎 Hidden Gems · 🆓 Free ·
-💕 Date.
+💕 Date Night (key `date`, so saved data carries over).
 
 **Moods:** chill, adventurous, romantic, foodie, artsy, touristy, outdoorsy, lively.
 
-**Coverage:** all five boroughs plus Jersey City (19 shown spots). Stale or
+**Coverage:** all five boroughs plus Jersey City (26 shown spots). Stale or
 unsafe places are excluded (e.g. Dead Horse Bay, the Freedom Tunnel).
 
-### Add-recognition library (`KB_EXTRA`, 368 places)
+### Add-recognition library (`KB_EXTRA`, 353 places)
 Same shape as SEED, never shown in Explore. Together with SEED it gives the Add
 form about 600 recognizable places. No KB entry repeats a shown spot's name or
 alias (data test).
@@ -57,6 +57,19 @@ for its borough by a data test). Every food place also has `cuisine`,
 recommended / walk-in). Live star ratings are not stored: they change and can't
 be fetched without a network call, so the UI links to Google Maps instead.
 Places that have moved were updated; ones that may have closed were removed.
+
+### Date Night details
+- **Restaurants (44):** must-try picks in Manhattan, Brooklyn, Queens, the
+  Bronx, Staten Island and Jersey City. Rules (data tests): no steakhouses or
+  pork-, burger- or meat-focused places, at most one seafood place (also checked
+  for recognized places, which keep their tags when added), and every
+  one has `cuisine`, `reputation`, `reservation`, `dress` (casual /
+  smart-casual / dressy), a short `vibe` and `dateWhen` (`day` only if it
+  serves lunch or brunch). Facts were checked against late-2026 listings where
+  possible; coordinates for new places are street-address estimates (~50 m).
+- **Activities:** every other Date Night spot has `dateWhen` (day / evening /
+  night) and `outdoor`; winter rinks and seasonal rooftops have `seasonal`
+  and are left out of date plans.
 
 ### Per-person state (localStorage)
 `{ schemaVersion: 2, visited: [ids], plan: [ordered ids], customItems: [spots] }`
@@ -119,6 +132,14 @@ notice instead of a blank page or silent data loss.
   from **unvisited** spots, then chains them nearest-neighbor by real distance;
   picks without a location still fill the plan. Without coordinates it falls
   back to same area → same borough → the rest. Shuffle, or Add All To My Plan.
+- **Plan a date:** ☀️ Half-Day Date (daytime spot → lunch → afternoon spot),
+  🌇 Date Evening (outdoor golden-hour spot → dinner → after-dinner stop) or
+  🌙 Date Night (Outdoors) (dinner → two outdoor after-dark stops). The
+  restaurant is drawn first and the Area/Budget options apply to it; each other
+  slot takes the closest unvisited spot that suits it, on the restaurant's side
+  of the water and within 4 km, preferring a kind of stop not already in the
+  plan. Each stop is labelled with its role. A restaurant with little nearby
+  gives a shorter "destination meal" plan, with a hint.
 - **Right: Your Saved Plan** with a "N of M done" counter; move up/down, remove.
 - Both are numbered **stop timelines**. Between stops, `hopInfo` gives the
   distance and mode (see Distances); if a stop can't be located, `hopKind`
@@ -183,12 +204,13 @@ default. An estimate, not live routing; the UI labels it as such.
 
 ## Testing
 `node --test test/` (Node 16, no dependencies):
-- `test/logic.test.js` (54): dedup, reconcile/migration, enrich, search,
-  filters, Surprise, plan generation and nearest-neighbor ordering, distances,
+- `test/logic.test.js` (61): dedup, reconcile/migration, enrich, search,
+  filters, Surprise, plan generation and nearest-neighbor ordering, date plans,
+  distances,
   walk/ferry rules, Eat Nearby, hop labels, travel time,
   borough mapping, storage failure, theme contrast.
-- `test/data.test.js` (17): catalog shape and size, coordinates inside each
-  borough, food details present, Eat Nearby coverage, no network loads, unique
+- `test/data.test.js` (21): catalog shape and size, coordinates inside each
+  borough, food details present, Date Night rules and coverage, Eat Nearby coverage, no network loads, unique
   names/aliases,
   KB/catalog disjointness, every v1 id resolves, rename targets exist, stale
   spots absent, borough coverage, key names recognized and generic ones not.

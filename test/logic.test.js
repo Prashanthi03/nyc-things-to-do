@@ -476,3 +476,82 @@ test('reconcile tolerates a malformed stored shape without throwing', () => {
   assert.deepEqual(out.plan, []);
   assert.deepEqual(out.customItems, []);
 });
+
+// Date plans: fixtures around the West Village (lat/lng in degrees; ~0.01° lat ≈ 1.1 km).
+function datePlaces() {
+  const at = (id, cats, lat, lng, extra) => Object.assign({ id, name: id, categories: cats, area: 'West Village', budget: '$$', moods: ['romantic'], time: 'half', lat, lng }, extra);
+  return [
+    at('dinner', ['food', 'date'], 40.733, -74.004, { dateWhen: ['evening', 'night'], budget: '$$$' }),
+    at('lunchspot', ['food', 'date'], 40.735, -74.003, { dateWhen: ['day', 'evening', 'night'] }),
+    at('steakhouse', ['food'], 40.7331, -74.0041),
+    at('pier', ['parks', 'date'], 40.734, -74.010, { dateWhen: ['day', 'evening', 'night'], outdoor: true }),
+    at('garden', ['parks', 'date'], 40.736, -74.006, { dateWhen: ['day'], outdoor: true }),
+    at('jazz', ['shows', 'date'], 40.7335, -74.0045, { dateWhen: ['night'], outdoor: false }),
+    at('rink', ['parks', 'date'], 40.7332, -74.0042, { dateWhen: ['night'], outdoor: true, seasonal: true }),
+    at('promenade', ['parks', 'date'], 40.740, -74.009, { dateWhen: ['evening', 'night'], outdoor: true }),
+    at('faraway', ['parks', 'date'], 40.850, -73.900, { dateWhen: ['day', 'evening', 'night'], outdoor: true, area: 'The Bronx' }),
+  ];
+}
+const ids = (plan) => plan.map((x) => x.id);
+
+test('date night: dinner first, then the closest outdoor after-dark spots, never seasonal or far away', () => {
+  const { generatePlan } = loadLogic();
+  const places = datePlaces();
+  const plan = generatePlan(places, { scope: 'date-night', budget: '$$$' }, () => 0, places);
+  assert.deepEqual(ids(plan), ['dinner', 'pier', 'promenade']);
+  assert.equal(plan.roles.dinner, '🍽️ Dinner');
+  assert.equal(plan.roles.pier, '🌃 After Dark');
+});
+
+test('date evening: outdoor golden-hour spot, dinner, then an after-dark stop (indoor allowed)', () => {
+  const { generatePlan } = loadLogic();
+  const places = datePlaces();
+  const plan = generatePlan(places, { scope: 'date-evening', budget: '$$$' }, () => 0, places);
+  assert.deepEqual(ids(plan), ['pier', 'dinner', 'jazz']);
+  assert.equal(plan.roles.pier, '🌇 Golden Hour');
+});
+
+test('half-day date: lunch only at places that serve it, with daytime spots around it', () => {
+  const { generatePlan } = loadLogic();
+  const places = datePlaces();
+  for (let r = 0; r < 1; r += 0.1) {
+    const plan = generatePlan(places, { scope: 'date-day' }, () => r, places);
+    assert.equal(plan[1].id, 'lunchspot');
+    assert.deepEqual(ids(plan).sort(), ['garden', 'lunchspot', 'pier']);
+  }
+});
+
+test('date plans: budget and area narrow the restaurant only; no restaurant means no plan', () => {
+  const { generatePlan } = loadLogic();
+  const places = datePlaces();
+  assert.equal(generatePlan(places, { scope: 'date-night', budget: '$$' }, () => 0, places)[0].id, 'lunchspot');
+  assert.deepEqual(generatePlan(places, { scope: 'date-night', budget: '$' }, () => 0, places), []);
+  assert.deepEqual(generatePlan(places, { scope: 'date-night', area: 'The Bronx' }, () => 0, places), []);
+});
+
+test('date plans: a custom date restaurant without timing details can anchor a plan', () => {
+  const { generatePlan } = loadLogic();
+  const places = datePlaces().filter((p) => !p.categories.includes('food'));
+  places.push({ id: 'c_1', name: 'My Spot', categories: ['food', 'date'], area: 'West Village', budget: '$$', moods: [], time: 'half', custom: true });
+  const plan = generatePlan(places, { scope: 'date-night' }, () => 0, places.concat(datePlaces()));
+  assert.equal(plan[0].id, 'c_1');
+  assert.ok(plan.length > 1, 'located via its neighborhood, so nearby stops are added');
+});
+
+test('adding a recognized date restaurant keeps its dress code, vibe and timing', () => {
+  const { addCustomItem } = loadLogic();
+  const r = addCustomItem([], { name: 'Somewhere', categories: ['food', 'date'], dress: 'dressy', vibe: 'Candlelit', dateWhen: ['night', 'bogus'], outdoor: false }, []);
+  assert.equal(r.item.dress, 'dressy');
+  assert.equal(r.item.vibe, 'Candlelit');
+  assert.deepEqual(r.item.dateWhen, ['night']);
+  assert.equal(r.item.outdoor, false);
+  assert.equal(addCustomItem([], { name: 'X', dress: 'tuxedo' }, []).item.dress, undefined);
+});
+
+test('date plans favour a different kind of stop over a second one of the same kind', () => {
+  const { generatePlan } = loadLogic();
+  const places = datePlaces();
+  places.push({ id: 'deck', name: 'deck', categories: ['iconic', 'date'], area: 'West Village', budget: '$$$', moods: [], time: 'quick', lat: 40.7415, lng: -74.0095, dateWhen: ['night'], outdoor: true });
+  const plan = generatePlan(places, { scope: 'date-night', budget: '$$$' }, () => 0, places);
+  assert.deepEqual(ids(plan), ['dinner', 'pier', 'deck'], 'deck beats the slightly closer second park');
+});
