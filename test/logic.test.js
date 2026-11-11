@@ -555,3 +555,70 @@ test('date plans favour a different kind of stop over a second one of the same k
   const plan = generatePlan(places, { scope: 'date-night', budget: '$$$' }, () => 0, places);
   assert.deepEqual(ids(plan), ['dinner', 'pier', 'deck'], 'deck beats the slightly closer second park');
 });
+
+test('suggestNearPlan: closest spots to any stop, same landmass, not already planned, with the nearest stop', () => {
+  const { suggestNearPlan } = loadLogic();
+  const P = (id, cats, lat, lng, area) => ({ id, name: id, categories: cats, area: area || 'West Village', budget: 'free', moods: [], time: 'quick', lat, lng });
+  const a = P('a', ['parks'], 40.733, -74.004), b = P('b', ['parks'], 40.760, -73.980, 'Midtown');
+  const near = P('near', ['hidden'], 40.734, -74.004), nearB = P('nearB', ['iconic'], 40.761, -73.980, 'Midtown');
+  const far = P('far', ['hidden'], 40.780, -73.960, 'Upper East Side');
+  const water = P('water', ['parks'], 40.733, -74.0, 'Brooklyn');
+  const pool = [a, b, near, nearB, far, water, P('A Copy', ['parks'], 40.7331, -74.004)];
+  pool[6].name = 'a';
+  const out = suggestNearPlan([a, b], pool, pool);
+  assert.deepEqual(out.map((r) => r.item.id), ['near', 'nearB']);
+  assert.equal(out[0].near.id, 'a');
+  assert.ok(out[0].walkMin >= 1, 'walk minutes for the label');
+  assert.equal(out[1].near.id, 'b');
+});
+
+test('suggestNearPlan: a plan with no food stop always gets a food idea, and keep() narrows (e.g. dates only)', () => {
+  const { suggestNearPlan } = loadLogic();
+  const P = (id, cats, lat, extra) => Object.assign({ id, name: id, categories: cats, area: 'West Village', budget: '$', moods: [], time: 'quick', lat, lng: -74.004 }, extra);
+  const stop = P('stop', ['parks'], 40.733);
+  const pool = [stop];
+  for (let i = 1; i <= 6; i++) pool.push(P('spot' + i, ['hidden'], 40.733 + i * 0.0005));
+  pool.push(P('cafe', ['food'], 40.7395));
+  const out = suggestNearPlan([stop], pool, pool, { limit: 5 });
+  assert.equal(out.length, 5);
+  assert.equal(out[4].item.id, 'cafe');
+  const withFood = suggestNearPlan([stop, pool[7]], pool, pool, { limit: 5 });
+  assert.ok(!withFood.some((r) => r.item.id === 'cafe'));
+  pool[3].categories.push('date');
+  assert.deepEqual(suggestNearPlan([stop], pool, pool, { keep: (it) => it.categories.includes('date') }).map((r) => r.item.id), ['spot3']);
+});
+
+test('date plans: a dessert spot is never the meal but can be the after-dinner stop', () => {
+  const { generatePlan } = loadLogic();
+  const places = datePlaces();
+  places.push({ id: 'gelato', name: 'gelato', categories: ['food', 'date'], area: 'West Village', budget: '$', moods: [], time: 'quick', lat: 40.7331, lng: -74.0041, dateWhen: ['evening', 'night'], outdoor: false, dessert: true });
+  for (let r = 0; r < 1; r += 0.25) {
+    const plan = generatePlan(places, { scope: 'date-evening' }, () => r, places);
+    assert.notEqual(plan[1].id, 'gelato');
+  }
+  const plan = generatePlan(places, { scope: 'date-evening', budget: '$$$' }, () => 0, places);
+  assert.equal(plan[2].id, 'gelato', 'closer than the jazz club');
+});
+
+test('date plans: the budget also caps the other stops, so a cheap date stays cheap', () => {
+  const { generatePlan } = loadLogic();
+  const places = datePlaces();
+  places.find((p) => p.id === 'lunchspot').budget = '$';
+  places.find((p) => p.id === 'pier').budget = '$$$';
+  places.find((p) => p.id === 'promenade').budget = 'free';
+  const plan = generatePlan(places, { scope: 'date-night', budget: '$' }, () => 0, places);
+  assert.deepEqual(plan.map((p) => p.id), ['lunchspot', 'promenade'], 'the $$$ pier is over budget, the free promenade is not');
+});
+
+test('suggestNearPlan: once the plan has a meal, no second restaurant (desserts still fine); seasonal spots go last', () => {
+  const { suggestNearPlan } = loadLogic();
+  const P = (id, cats, lat, extra) => Object.assign({ id, name: id, categories: cats, area: 'West Village', budget: '$', moods: [], time: 'quick', lat, lng: -74.004 }, extra);
+  const dinner = P('dinner', ['food', 'date'], 40.733);
+  const pool = [dinner, P('bistro', ['food', 'date'], 40.7331), P('gelato', ['food', 'date'], 40.7332, { dessert: true }),
+    P('rink', ['parks', 'date'], 40.7333, { seasonal: true }), P('pier', ['parks', 'date'], 40.737)];
+  const ids = suggestNearPlan([dinner], pool, pool).map((r) => r.item.id);
+  assert.deepEqual(ids, ['gelato', 'pier', 'rink']);
+  const park = P('park', ['parks'], 40.733);
+  const noMeal = suggestNearPlan([park], [park, P('gelato2', ['food'], 40.7331, { dessert: true }), P('bistro2', ['food'], 40.736)], pool, { limit: 1 });
+  assert.deepEqual(noMeal.map((r) => r.item.id), ['bistro2'], 'a dessert is not the plan’s meal idea');
+});

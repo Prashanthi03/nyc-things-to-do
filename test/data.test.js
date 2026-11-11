@@ -184,7 +184,7 @@ test('every food place has a reputation and a reservation policy', () => {
   assert.deepEqual(bad, []);
 });
 
-const isDateEatery = (i) => i.categories.includes('date') && i.categories.includes('food') && !i.categories.includes('neighborhoods');
+const isDateEatery = (i) => i.categories.includes('date') && i.categories.includes('food') && !i.categories.includes('neighborhoods') && !i.dessert;
 
 test('Date Night restaurants: full details, and no steakhouses, pork-focused or (beyond one) seafood places', () => {
   const { SEED, KB_EXTRA } = loadLogic();
@@ -227,4 +227,26 @@ test('a Date Night (Outdoors) plan from most Manhattan, Brooklyn and Jersey City
     return plan.length < 2;
   }).map((r) => r.name);
   assert.ok(lonely.length <= 2, 'no outdoor stop near: ' + lonely.join(', '));
+});
+
+test('Date Night dessert stops: a vibe and timing, indoors, never counted as a meal', () => {
+  const { SEED } = loadLogic();
+  const sweets = SEED.filter((i) => i.dessert);
+  assert.ok(sweets.length >= 4, 'only ' + sweets.length + ' dessert stops');
+  const bad = sweets.filter((i) => !i.categories.includes('date') || !i.categories.includes('food') || !i.vibe || !Array.isArray(i.dateWhen) || i.outdoor !== false).map((i) => i.name);
+  assert.deepEqual(bad, []);
+});
+
+test('plenty of free and low-budget dates, including in Jersey City', () => {
+  const { SEED, boroughOf } = loadLogic();
+  const cheap = SEED.filter((i) => i.categories.includes('date') && (i.budget === 'free' || i.budget === '$'));
+  assert.ok(cheap.length >= 80, 'only ' + cheap.length + ' free/$ date spots');
+  assert.ok(cheap.filter((i) => boroughOf(i.area) === 'Jersey City').length >= 10, 'too few cheap Jersey City dates');
+  assert.ok(SEED.filter((i) => isDateEatery(i) && i.budget === '$').length >= 8, 'too few $ date meals');
+});
+
+test('shown spots use plain neighborhood names that map to a borough and a travel time', () => {
+  const { SEED, boroughOf } = loadLogic();
+  assert.deepEqual(SEED.filter((i) => i.area.includes(',')).map((i) => i.name + ' (' + i.area + ')'), []);
+  assert.deepEqual(SEED.filter((i) => boroughOf(i.area) === 'Elsewhere').map((i) => i.name + ' (' + i.area + ')'), []);
 });
